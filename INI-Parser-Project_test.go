@@ -19,7 +19,8 @@ func TestParseINI(t *testing.T) {
 	}
 
 	// Parse the INI file
-	got, err := ParseINI("test.ini")
+	data := ReadFile("test.ini")
+	got, err := ParseINI(data)
 	if err != nil {
 		t.Fatalf("Error parsing INI file: %v", err)
 	}
@@ -36,7 +37,8 @@ func TestSetVal(t *testing.T) {
 	want := "8000"
 
 	// Parse the INI file
-	config, err := ParseINI("test.ini")
+	data := ReadFile("test.ini")
+	config, err := ParseINI(data)
 	if err != nil {
 		t.Fatalf("Error parsing INI file: %v", err)
 	}

@@ -29,6 +29,7 @@ func TestParseINI(t *testing.T) {
 		t.Errorf("config does not match expected config.\nExpected: %+v\nActual: %+v", want, got)
 	}
 }
+
 func TestSetVal(t *testing.T) {
 
 	// test when set port in database section

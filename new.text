@@ -1,7 +1,3 @@
-topsecret.server.example:
-Port:50022
-ForwardX11:no
-
 DEFAULT:
 ServerAliveInterval:asmaa
 Compression:yes
@@ -10,4 +6,8 @@ ForwardX11:yes
 
 forge.example:
 User:hg
+
+topsecret.server.example:
+Port:50022
+ForwardX11:no
 

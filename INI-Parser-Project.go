@@ -15,22 +15,6 @@ func checkError(e error) {
 	}
 }
 
-// func ReadFile(fileName string) []string {
-
-// 	file, err := os.Open(fileName)
-// 	// check if there is an error in reading
-// 	checkError(err)
-// 	// close the file
-// 	defer file.Close()
-
-// 	scanner := bufio.NewScanner(file)
-// 	data := []string{}
-// 	for scanner.Scan() {
-// 		data = append(data, strings.TrimSpace(scanner.Text()))
-// 	}
-
-//		return data
-//	}
 func ReadFile(fileName string) string {
 
 	file, err := os.Open(fileName)
@@ -125,17 +109,26 @@ func SetVal(config Config, SectionName string, key string, value string) Config 
 	return config
 }
 
+func ReadVal(config Config, SectionName string, key string) string {
+	data := config[SectionName][key]
+	if data == "" {
+		fmt.Println("Error:", "Doesn't exist")
+		return "ERROR"
+	}
+	return data
+}
+
 func PrintFunction(config Config) {
 	// accessing values from the file.
-	defServ := config["DEFAULT"]["ServerAliveInterval"]
-	defCom := config["DEFAULT"]["Compression"]
-	defComLevel := config["DEFAULT"]["CompressionLevel"]
-	defFor := config["DEFAULT"]["ForwardX11"]
+	defServ := ReadVal(config, "DEFAULT", "ServerAliveInterval")
+	defCom := ReadVal(config, "DEFAULT", "Compression")
+	defComLevel := ReadVal(config, "DEFAULT", "CompressionLevel")
+	defFor := ReadVal(config, "DEFAULT", "ForwardX11")
 
-	forUser := config["forge.example"]["User"]
+	forUser := ReadVal(config, "forge.example", "User")
 
-	topPort := config["topsecret.server.example"]["Port"]
-	topFor := config["topsecret.server.example"]["ForwardX11"]
+	topPort := ReadVal(config, "topsecret.server.example", "Port")
+	topFor := ReadVal(config, "topsecret.server.example", "ForwardX11")
 
 	fmt.Println("DEFAULT Configuration:")
 	fmt.Println("ServerAliveInterval:", defServ)
@@ -198,6 +191,8 @@ func main() {
 		fmt.Println("Error:", err)
 		return
 	}
-	port := config["server"]["port"]
+	port := ReadVal(config, "server", "port")
+	fmt.Println()
+	fmt.Println()
 	fmt.Println("port:", port)
 }

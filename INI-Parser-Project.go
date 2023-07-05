@@ -63,13 +63,12 @@ func ParseINI(filename string) (Config, error) {
 	return config, nil
 }
 
-func main() {
-	config, err := ParseINI("config.ini")
-	if err != nil {
-		fmt.Println("Error:", err)
-		return
-	}
+func SetVal(config Config, SectionName string, key string, value string) Config {
+	config[SectionName][key] = value
+	return config
+}
 
+func PrintFunction(config Config) {
 	// accessing values from the file.
 	defServ := config["DEFAULT"]["ServerAliveInterval"]
 	defCom := config["DEFAULT"]["Compression"]
@@ -95,4 +94,35 @@ func main() {
 	fmt.Println("topsecret.server.example Configuration:")
 	fmt.Println("Port:", topPort)
 	fmt.Println("ForwardX11:", topFor)
+}
+
+func WriteFunction(config Config) {
+	file, err := os.Create("new.text")
+	checkError(err)
+	defer file.Close()
+
+	for SectionName := range config {
+		SectionLine := SectionName + ":\n"
+		_, err = file.WriteString(SectionLine)
+		checkError(err)
+
+		for key, value := range config[SectionName] {
+			line := key + ":" + value + "\n"
+			_, err = file.WriteString(line)
+			checkError(err)
+		}
+		_, err = file.WriteString("\n")
+		checkError(err)
+	}
+}
+
+func main() {
+	config, err := ParseINI("config.ini")
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
+	PrintFunction(config)
+	SetVal(config, "DEFAULT", "ServerAliveInterval", "asmaa")
+	WriteFunction(config)
 }

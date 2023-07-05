@@ -1,5 +1,6 @@
 ## 📝 Table of Contents
 
+- [📝 Table of Contents](#-table-of-contents)
 - [About ](#about-)
 - [Features ](#features-)
 - [How to Use ](#how-to-use-)
@@ -28,7 +29,8 @@ import "path/to/main"
 - Parse an INI file using the ParseINI function:
 
 ```sh
-config, err := main.ParseINI("config.ini")
+data := ReadFile("config.ini")
+config, err := ParseINI(data)
 if err != nil {
     fmt.Println("Error:", err)
     return
@@ -38,7 +40,7 @@ if err != nil {
 - Access configuration values by section and key:
 
 ```sh
-  value := config["section"]["key"]
+  value := ReadVal(config, "section", "key")
 ```
 
 - Print the current configuration values to the console using the PrintFunction function:

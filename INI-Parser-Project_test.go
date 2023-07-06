@@ -31,11 +31,31 @@ func TestGetSections(t *testing.T) {
 	}
 }
 
+func TestGetSectionNames(t *testing.T) {
+
+	want := []string{"server", "database"}
+
+	data, err := LoadFromFile("test.ini")
+	if err != nil {
+		t.Fatalf("Error Reading file: %v", err)
+	}
+	config := GetSections(data)
+
+	got := GetSectionNames(config)
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+		return
+	}
+
+	if !(reflect.DeepEqual(got, want)) {
+		t.Errorf("Reading value does not match expected value.\nExpected: %+v\nActual: %+v", want, got)
+	}
+}
+
 func TestGet(t *testing.T) {
 
 	want := "8080"
 
-	// Parse the INI file
 	data, err := LoadFromFile("test.ini")
 	if err != nil {
 		t.Fatalf("Error Reading file: %v", err)
@@ -48,7 +68,6 @@ func TestGet(t *testing.T) {
 		return
 	}
 
-	// Compare the set value with the expected value
 	if !(got == want) {
 		t.Errorf("Reading value does not match expected value.\nExpected: %+v\nActual: %+v", want, got)
 	}
@@ -56,10 +75,8 @@ func TestGet(t *testing.T) {
 
 func TestSet(t *testing.T) {
 
-	// test when set port in database section
 	want := "8000"
 
-	// Parse the INI file
 	data, err := LoadFromFile("test.ini")
 	if err != nil {
 		t.Fatalf("Error Reading file: %v", err)

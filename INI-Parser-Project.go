@@ -84,9 +84,8 @@ func Get(config Config, SectionName string, key string) (string, error) {
 	return data, nil
 }
 
-func Set(config Config, SectionName string, key string, value string) Config {
+func Set(config Config, SectionName string, key string, value string) {
 	config[SectionName][key] = value
-	return config
 }
 
 // func PrintFunction(config Config) {
@@ -180,7 +179,7 @@ func main() {
 	sections := GetSectionNames(config)
 	fmt.Println(sections)
 
-	config = Set(config, "DEFAULT", "ServerAliveInterval", "asmaa")
+	Set(config, "DEFAULT", "ServerAliveInterval", "asmaa")
 	data = ToString(config)
 	fmt.Println(data)
 

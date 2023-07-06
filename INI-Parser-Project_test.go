@@ -83,7 +83,7 @@ func TestSet(t *testing.T) {
 	}
 	config := GetSections(data)
 
-	config = Set(config, "database", "port", "8000")
+	Set(config, "database", "port", "8000")
 
 	got := config["database"]["port"]
 

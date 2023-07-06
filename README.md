@@ -60,7 +60,7 @@ if err != nil {
 - Set new values for keys using the Set function:
 
 ```sh
-config = main.Set(config, "section", "key", "new_value")
+main.Set(config, "section", "key", "new_value")
 ```
 
 - Convert Sections to String using the ToString function:

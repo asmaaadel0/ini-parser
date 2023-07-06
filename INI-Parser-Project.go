@@ -10,14 +10,12 @@ import (
 
 type Config map[string]map[string]string
 
-func ReadFile(fileName string) (string, error) {
+func LoadFromFile(fileName string) (string, error) {
 
 	file, err := os.Open(fileName)
-	// check if there is an error in reading
 	if err != nil {
 		return "", errors.New("Error Opening file")
 	}
-	// close the file
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
@@ -29,7 +27,11 @@ func ReadFile(fileName string) (string, error) {
 	return data, nil
 }
 
-func ParseINI(data string) Config {
+func LoadFromString(data string) string {
+	return data
+}
+
+func GetSections(data string) Config {
 
 	config := make(Config)
 	currentSection := ""
@@ -66,12 +68,15 @@ func ParseINI(data string) Config {
 	return config
 }
 
-func SetVal(config Config, SectionName string, key string, value string) Config {
-	config[SectionName][key] = value
-	return config
+func GetSectionNames(config Config) []string {
+	list := []string{}
+	for item := range config {
+		list = append(list, item)
+	}
+	return list
 }
 
-func ReadVal(config Config, SectionName string, key string) (string, error) {
+func Get(config Config, SectionName string, key string) (string, error) {
 	data := config[SectionName][key]
 	if data == "" {
 		return "", errors.New("Doesn't exist")
@@ -79,63 +84,75 @@ func ReadVal(config Config, SectionName string, key string) (string, error) {
 	return data, nil
 }
 
-func PrintFunction(config Config) {
-	// accessing values from the file.
-	defServ, err := ReadVal(config, "DEFAULT", "ServerAliveInterval")
-	if err != nil {
-		fmt.Print("Error:", err)
-		return
-	}
-	defCom, err := ReadVal(config, "DEFAULT", "Compression")
-	if err != nil {
-		fmt.Print("Error:", err)
-		return
-	}
-	defComLevel, err := ReadVal(config, "DEFAULT", "CompressionLevel")
-	if err != nil {
-		fmt.Print("Error:", err)
-		return
-	}
-	defFor, err := ReadVal(config, "DEFAULT", "ForwardX11")
-	if err != nil {
-		fmt.Print("Error:", err)
-		return
-	}
-
-	forUser, err := ReadVal(config, "forge.example", "User")
-	if err != nil {
-		fmt.Print("Error:", err)
-		return
-	}
-
-	topPort, err := ReadVal(config, "topsecret.server.example", "Port")
-	if err != nil {
-		fmt.Print("Error:", err)
-		return
-	}
-	topFor, err := ReadVal(config, "topsecret.server.example", "ForwardX11")
-	if err != nil {
-		fmt.Print("Error:", err)
-		return
-	}
-
-	fmt.Println("DEFAULT Configuration:")
-	fmt.Println("ServerAliveInterval:", defServ)
-	fmt.Println("Compression:", defCom)
-	fmt.Println("CompressionLevel:", defComLevel)
-	fmt.Println("ForwardX11:", defFor)
-	fmt.Println()
-
-	fmt.Println("forge.example Configuration:")
-	fmt.Println("User:", forUser)
-	fmt.Println()
-
-	fmt.Println("topsecret.server.example Configuration:")
-	fmt.Println("Port:", topPort)
-	fmt.Println("ForwardX11:", topFor)
+func Set(config Config, SectionName string, key string, value string) Config {
+	config[SectionName][key] = value
+	return config
 }
 
-func WriteFunction(config Config) error {
+// func PrintFunction(config Config) {
+// 	// accessing values from the file.
+// 	defServ, err := Get(config, "DEFAULT", "ServerAliveInterval")
+// 	if err != nil {
+// 		fmt.Print("Error:", err)
+// 		return
+// 	}
+// 	defCom, err := Get(config, "DEFAULT", "Compression")
+// 	if err != nil {
+// 		fmt.Print("Error:", err)
+// 		return
+// 	}
+// 	defComLevel, err := Get(config, "DEFAULT", "CompressionLevel")
+// 	if err != nil {
+// 		fmt.Print("Error:", err)
+// 		return
+// 	}
+// 	defFor, err := Get(config, "DEFAULT", "ForwardX11")
+// 	if err != nil {
+// 		fmt.Print("Error:", err)
+// 		return
+// 	}
+// 	forUser, err := Get(config, "forge.example", "User")
+// 	if err != nil {
+// 		fmt.Print("Error:", err)
+// 		return
+// 	}
+// 	topPort, err := Get(config, "topsecret.server.example", "Port")
+// 	if err != nil {
+// 		fmt.Print("Error:", err)
+// 		return
+// 	}
+// 	topFor, err := Get(config, "topsecret.server.example", "ForwardX11")
+// 	if err != nil {
+// 		fmt.Print("Error:", err)
+// 		return
+// 	}
+// 	fmt.Println("DEFAULT Configuration:")
+// 	fmt.Println("ServerAliveInterval:", defServ)
+// 	fmt.Println("Compression:", defCom)
+// 	fmt.Println("CompressionLevel:", defComLevel)
+// 	fmt.Println("ForwardX11:", defFor)
+// 	fmt.Println()
+// 	fmt.Println("forge.example Configuration:")
+// 	fmt.Println("User:", forUser)
+// 	fmt.Println()
+// 	fmt.Println("topsecret.server.example Configuration:")
+// 	fmt.Println("Port:", topPort)
+// 	fmt.Println("ForwardX11:", topFor)
+// }
+
+func ToString(config Config) string {
+	data := ""
+	for SectionName := range config {
+		data = data + SectionName + ":\n"
+		for key, value := range config[SectionName] {
+			data = data + key + " = " + value + "\n"
+		}
+		data = data + "\n"
+	}
+	return data
+}
+
+func SaveToFile(data string) error {
 	file, err := os.Create("new.text")
 	// check if there is an error in creating
 	if err != nil {
@@ -143,56 +160,49 @@ func WriteFunction(config Config) error {
 	}
 	defer file.Close()
 
-	for SectionName := range config {
-		SectionLine := SectionName + ":\n"
-		_, err = file.WriteString(SectionLine)
-		// check if there is an error in creating
-		if err != nil {
-			return errors.New("Error writing file")
-		}
-		for key, value := range config[SectionName] {
-			line := key + ":" + value + "\n"
-			_, err = file.WriteString(line)
-			// check if there is an error in writing
-			if err != nil {
-				return errors.New("Error writing file")
-			}
-		}
-		_, err = file.WriteString("\n")
-		// check if there is an error in writing
-		if err != nil {
-			return errors.New("Error writing file")
-		}
+	_, err = file.WriteString(data)
+	// check if there is an error in writing
+	if err != nil {
+		return errors.New("Error writing file")
 	}
 	return nil
 }
 
 func main() {
-	data, err := ReadFile("config.ini")
+	data, err := LoadFromFile("config.ini")
 	if err != nil {
 		fmt.Print("Error:", err)
 		return
 	}
-	config := ParseINI(data)
-	PrintFunction(config)
-	config = SetVal(config, "DEFAULT", "ServerAliveInterval", "asmaa")
-	err = WriteFunction(config)
+	config := GetSections(data)
+	fmt.Println(config)
+
+	sections := GetSectionNames(config)
+	fmt.Println(sections)
+
+	config = Set(config, "DEFAULT", "ServerAliveInterval", "asmaa")
+	data = ToString(config)
+	fmt.Println(data)
+
+	err = SaveToFile(data)
 	if err != nil {
 		fmt.Print("Error:", err)
 		return
 	}
 
-	// test data as string not file
 	data = `[server]
 	ip = 127.0.0.1
 	port = 8080
-	
+
 	[database]
 	host = localhost
 	port = 5432
 	name = mydb`
-	config = ParseINI(data)
-	port, err := ReadVal(config, "server", "port")
+
+	data = LoadFromString(data)
+	config = GetSections(data)
+
+	port, err := Get(config, "server", "port")
 	if err != nil {
 		fmt.Print("Error:", err)
 		return

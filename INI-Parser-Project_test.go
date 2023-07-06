@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-func TestParseINI(t *testing.T) {
+func TestGetSections(t *testing.T) {
 	want := Config{
 		"server": map[string]string{
 			"ip":   "127.0.0.1",
@@ -19,11 +19,11 @@ func TestParseINI(t *testing.T) {
 	}
 
 	// Parse the INI file
-	data, err := ReadFile("test.ini")
+	data, err := LoadFromFile("test.ini")
 	if err != nil {
 		t.Fatalf("Error Reading file: %v", err)
 	}
-	got := ParseINI(data)
+	got := GetSections(data)
 
 	// Compare the parsed config with the expected config
 	if !reflect.DeepEqual(got, want) {
@@ -31,18 +31,18 @@ func TestParseINI(t *testing.T) {
 	}
 }
 
-func TestReadVal(t *testing.T) {
+func TestGet(t *testing.T) {
 
 	want := "8080"
 
 	// Parse the INI file
-	data, err := ReadFile("test.ini")
+	data, err := LoadFromFile("test.ini")
 	if err != nil {
 		t.Fatalf("Error Reading file: %v", err)
 	}
-	config := ParseINI(data)
+	config := GetSections(data)
 
-	got, err := ReadVal(config, "server", "port")
+	got, err := Get(config, "server", "port")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 		return
@@ -54,19 +54,19 @@ func TestReadVal(t *testing.T) {
 	}
 }
 
-func TestSetVal(t *testing.T) {
+func TestSet(t *testing.T) {
 
 	// test when set port in database section
 	want := "8000"
 
 	// Parse the INI file
-	data, err := ReadFile("test.ini")
+	data, err := LoadFromFile("test.ini")
 	if err != nil {
 		t.Fatalf("Error Reading file: %v", err)
 	}
-	config := ParseINI(data)
+	config := GetSections(data)
 
-	config = SetVal(config, "database", "port", "8000")
+	config = Set(config, "database", "port", "8000")
 
 	got := config["database"]["port"]
 

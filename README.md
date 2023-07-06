@@ -1,10 +1,11 @@
 # 📝 Table of Contents
 
-- [About ](#about-)
-- [Features ](#features-)
-- [How to Use ](#how-to-use-)
-- [Contributors ](#contributors-)
-- [License ](#license-)
+- [📝 Table of Contents](#-table-of-contents)
+  - [About ](#about-)
+  - [Features ](#features-)
+  - [How to Use ](#how-to-use-)
+  - [Contributors ](#contributors-)
+  - [License ](#license-)
 
 ## About <a name = "About"></a>
 
@@ -25,43 +26,54 @@ This is a simple INI parser project written in Go. It allows you to parse and ma
 import "path/to/main"
 ```
 
-- Parse an INI file using the ParseINI function:
+- Load Data from String using the LoadFromString function:
 
 ```sh
-	data, err := main.ReadFile("config.ini")
+	data, err := main.LoadFromString("config.ini")
+```
+
+- Load Data from file using the LoadFromFile function:
+
+```sh
+	data, err := main.LoadFromFile("config.ini")
 	if err != nil {
 		fmt.Print("Error:", err)
 		return
 	}
-	config := main.ParseINI(data)
 ```
 
-- Access configuration values by section and key:
+- Get all sections from config file using the GetSections function:
 
 ```sh
-  value, err := main.ReadVal(config, "section", "key")
+	config := main.GetSections(data)
+```
+
+- Access configuration values by section and key using the Get function:
+
+```sh
+  value, err := main.Get(config, "section", "key")
   if err != nil {
 		fmt.Print("Error:", err)
 		return
 	}
 ```
 
-- Print the current configuration values to the console using the PrintFunction function:
+- Set new values for keys using the Set function:
 
 ```sh
-main.PrintFunction(config)
+config = main.Set(config, "section", "key", "new_value")
 ```
 
-- Set new values for keys using the SetVal function:
+- Convert Sections to String using the ToString function:
 
 ```sh
-config = main.SetVal(config, "section", "key", "new_value")
+data = main.ToString(config)
 ```
 
-- Write the modified configuration to a new text file using the WriteFunction function:
+- Write the modified configuration to a new text file using the SaveToFile function:
 
 ```sh
-err = main.WriteFunction(config)
+err = main.SaveToFile(config)
 if err != nil {
     fmt.Println("Error:", err)
     return

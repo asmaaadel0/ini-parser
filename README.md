@@ -1,5 +1,6 @@
 ## 📝 Table of Contents
 
+- [📝 Table of Contents](#-table-of-contents)
 - [About ](#about-)
 - [Features ](#features-)
 - [How to Use ](#how-to-use-)
@@ -28,18 +29,22 @@ import "path/to/main"
 - Parse an INI file using the ParseINI function:
 
 ```sh
-data := ReadFile("config.ini")
-config, err := ParseINI(data)
-if err != nil {
-    fmt.Println("Error:", err)
-    return
-  }
+	data, err := main.ReadFile("config.ini")
+	if err != nil {
+		fmt.Print("Error:", err)
+		return
+	}
+	config := main.ParseINI(data)
 ```
 
 - Access configuration values by section and key:
 
 ```sh
-  value := ReadVal(config, "section", "key")
+  value, err := main.ReadVal(config, "section", "key")
+  if err != nil {
+		fmt.Print("Error:", err)
+		return
+	}
 ```
 
 - Print the current configuration values to the console using the PrintFunction function:
@@ -51,7 +56,7 @@ main.PrintFunction(config)
 - Set new values for keys using the SetVal function:
 
 ```sh
-main.SetVal(config, "section", "key", "new_value")
+config = main.SetVal(config, "section", "key", "new_value")
 ```
 
 - Write the modified configuration to a new text file using the WriteFunction function:

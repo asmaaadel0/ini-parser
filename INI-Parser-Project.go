@@ -176,7 +176,11 @@ func main() {
 	config := ParseINI(data)
 	PrintFunction(config)
 	config = SetVal(config, "DEFAULT", "ServerAliveInterval", "asmaa")
-	WriteFunction(config)
+	err = WriteFunction(config)
+	if err != nil {
+		fmt.Print("Error:", err)
+		return
+	}
 
 	// test data as string not file
 	data = `[server]

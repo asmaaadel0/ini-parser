@@ -28,33 +28,33 @@ import "path/to/main"
 - Load Data from String using the LoadFromString function:
 
 ```sh
-	data, err := main.LoadFromString("config.ini")
+data, err := main.LoadFromString("config.ini")
 ```
 
 - Load Data from file using the LoadFromFile function:
 
 ```sh
-	data, err := main.LoadFromFile("config.ini")
-	if err != nil {
-		fmt.Print("Error:", err)
-		return
-	}
+data, err := main.LoadFromFile("config.ini")
+if err != nil {
+    fmt.Print("Error:", err)
+    return
+}
 ```
 
 - Get all sections from config file using the GetSections function:
 
 ```sh
-	config := main.GetSections(data)
+config := main.GetSections(data)
 ```
 
 - Access configuration values by section and key using the Get function:
 
 ```sh
-  value, err := main.Get(config, "section", "key")
-  if err != nil {
-		fmt.Print("Error:", err)
-		return
-	}
+value, err := main.Get(config, "section", "key")
+if err != nil {
+    fmt.Print("Error:", err)
+    return
+}
 ```
 
 - Set new values for keys using the Set function:

@@ -182,7 +182,7 @@ func TestToString(t *testing.T) {
 	got := ini.data
 
 	// Compare the parsed config with the expected config
-	if !(strings.Contains(got, "server:") || strings.Contains(got, "port = 8080") || strings.Contains(got, "database:") || strings.Contains(got, "host = localhost")) {
+	if !(strings.Contains(got, "[server]") || strings.Contains(got, "port = 8080") || strings.Contains(got, "[database]") || strings.Contains(got, "host = localhost")) {
 		t.Errorf("config does not match expected config.\nExpected: %+v\nActual: %+v", want, got)
 	}
 }

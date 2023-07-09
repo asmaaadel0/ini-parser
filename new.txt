@@ -1,1 +1,13 @@
-Map: map[DEFAULT:map[Compression:yes CompressionLevel:9 ForwardX11:yes ServerAliveInterval:asmaa] forge.example:map[User:hg] topsecret.server.example:map[ForwardX11:no Port:50022]]
+[DEFAULT]
+CompressionLevel = 9
+ForwardX11 = yes
+ServerAliveInterval = asmaa
+Compression = yes
+
+[forge.example]
+User = hg
+
+[topsecret.server.example]
+Port = 50022
+ForwardX11 = no
+

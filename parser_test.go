@@ -200,7 +200,13 @@ func TestSet(t *testing.T) {
 
 	got := ini.sections["database"]["port"]
 
-	// Compare the set value with the expected value
+	if !(got == want) {
+		t.Errorf("setting value does not match expected value.\nExpected: %+v\nActual: %+v", want, got)
+	}
+
+	ini.Set("database", "portt", "8000")
+	got = ini.sections["database"]["portt"]
+
 	if !(got == want) {
 		t.Errorf("setting value does not match expected value.\nExpected: %+v\nActual: %+v", want, got)
 	}

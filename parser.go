@@ -10,30 +10,15 @@ import (
 
 type Config map[string]map[string]string
 
-func LoadFromFile(fileName string) (string, error) {
-
-	file, err := os.Open(fileName)
-	if err != nil {
-		return "", errors.New("Error Opening file")
-	}
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-	data := ""
-	for scanner.Scan() {
-		data = data + strings.TrimSpace(scanner.Text()) + "\n"
-	}
-
-	return data, nil
+type INIParser struct {
+	sections     Config
+	sectionNames []string
+	data         string
 }
 
-func LoadFromString(data string) string {
-	return data
-}
+func (ini *INIParser) LoadFromString(data string) {
+	ini.sections = Config{}
 
-func GetSections(data string) Config {
-
-	config := make(Config)
 	currentSection := ""
 
 	scanner := bufio.NewScanner(strings.NewReader(data))
@@ -50,8 +35,9 @@ func GetSections(data string) Config {
 		if line[0] == '[' && line[len(line)-1] == ']' {
 			// set current section with new section name
 			currentSection = strings.TrimSpace(line[1 : len(line)-1])
+			ini.sectionNames = append(ini.sectionNames, currentSection)
 			// create new map with current section
-			config[currentSection] = make(map[string]string)
+			ini.sections[currentSection] = make(map[string]string)
 			// if current section not empty
 		} else if currentSection != "" {
 			// split line in two pieces with separet "="
@@ -61,31 +47,39 @@ func GetSections(data string) Config {
 			// access the second part "value"
 			value := strings.TrimSpace(parts[1])
 			// map value with the key
-			config[currentSection][key] = value
+			ini.sections[currentSection][key] = value
 		}
 	}
-
-	return config
 }
 
-func GetSectionNames(config Config) []string {
-	list := []string{}
-	for item := range config {
-		list = append(list, item)
+func (ini *INIParser) LoadFromFile(file *os.File) {
+	scanner := bufio.NewScanner(file)
+	data := ""
+	for scanner.Scan() {
+		data = data + strings.TrimSpace(scanner.Text()) + "\n"
 	}
-	return list
+
+	ini.LoadFromString(data)
 }
 
-func Get(config Config, SectionName string, key string) (string, error) {
-	data := config[SectionName][key]
+func (ini *INIParser) GetSections() Config {
+	return ini.sections
+}
+
+func (ini *INIParser) GetSectionNames() []string {
+	return ini.sectionNames
+}
+
+func (ini *INIParser) Get(SectionName string, key string) (string, error) {
+	data := ini.sections[SectionName][key]
 	if data == "" {
-		return "", errors.New("Doesn't exist")
+		return "", errors.New("doesn't exist")
 	}
 	return data, nil
 }
 
-func Set(config Config, SectionName string, key string, value string) {
-	config[SectionName][key] = value
+func (ini *INIParser) Set(SectionName string, key string, value string) {
+	ini.sections[SectionName][key] = value
 }
 
 // func PrintFunction(config Config) {
@@ -139,69 +133,75 @@ func Set(config Config, SectionName string, key string, value string) {
 // 	fmt.Println("ForwardX11:", topFor)
 // }
 
-func ToString(config Config) string {
+func (ini *INIParser) ToString() string {
 	data := ""
-	for SectionName := range config {
+	for SectionName := range ini.sections {
 		data = data + SectionName + ":\n"
-		for key, value := range config[SectionName] {
+		for key, value := range ini.sections[SectionName] {
 			data = data + key + " = " + value + "\n"
 		}
 		data = data + "\n"
 	}
+	ini.data = data
 	return data
 }
 
-func SaveToFile(data string) error {
-	file, err := os.Create("new.text")
+func (ini *INIParser) SaveToFile(path string) error {
+	file, err := os.Create(path)
 	// check if there is an error in creating
 	if err != nil {
-		return errors.New("Error creating file")
+		return errors.New("error creating file")
 	}
 	defer file.Close()
 
-	_, err = file.WriteString(data)
-	// check if there is an error in writing
-	if err != nil {
-		return errors.New("Error writing file")
-	}
-	return nil
+	_, err = file.WriteString(ini.data)
+	return err
 }
 
 func main() {
-	data, err := LoadFromFile("config.ini")
+	ini := INIParser{}
+
+	file, err := os.Open("config.ini")
 	if err != nil {
 		fmt.Print("Error:", err)
 		return
 	}
-	config := GetSections(data)
-	fmt.Println(config)
+	defer file.Close()
 
-	sections := GetSectionNames(config)
+	ini.LoadFromFile(file)
+	if err != nil {
+		fmt.Print("Error:", err)
+		return
+	}
+	sections := ini.GetSections()
 	fmt.Println(sections)
 
-	Set(config, "DEFAULT", "ServerAliveInterval", "asmaa")
-	data = ToString(config)
+	sectionNames := ini.GetSectionNames()
+	fmt.Println(sectionNames)
+
+	ini.Set("DEFAULT", "ServerAliveInterval", "asmaa")
+	data := ini.ToString()
 	fmt.Println(data)
 
-	err = SaveToFile(data)
+	err = ini.SaveToFile("new.txt")
 	if err != nil {
 		fmt.Print("Error:", err)
 		return
 	}
 
 	data = `[server]
-	ip = 127.0.0.1
-	port = 8080
+ip = 127.0.0.1
+port = 8080
 
-	[database]
-	host = localhost
-	port = 5432
-	name = mydb`
+[database]
+host = localhost
+port = 5432
+name = mydb`
 
-	data = LoadFromString(data)
-	config = GetSections(data)
+	ini.LoadFromString(data)
+	sections = ini.GetSections()
 
-	port, err := Get(config, "server", "port")
+	port, err := ini.Get("server", "port")
 	if err != nil {
 		fmt.Print("Error:", err)
 		return

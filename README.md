@@ -1,5 +1,6 @@
 # 📝 Table of Contents
 
+- [📝 Table of Contents](#-table-of-contents)
   - [About ](#about-)
   - [Features ](#features-)
   - [How to Use ](#how-to-use-)
@@ -34,10 +35,16 @@ data, err := main.LoadFromString("config.ini")
 - Load Data from file using the LoadFromFile function:
 
 ```sh
-data, err := main.LoadFromFile("config.ini")
+file, err := os.Open("config.ini")
 if err != nil {
-    fmt.Print("Error:", err)
-    return
+  fmt.Print("Error:", err)
+  return
+}
+defer file.Close()
+data, err := LoadFromFile(file)
+if err != nil {
+  fmt.Print("Error:", err)
+  return
 }
 ```
 

@@ -146,16 +146,16 @@ func (ini *INIParser) Set(SectionName string, key string, value string) {
 // }
 
 func (ini *INIParser) ToString() {
-	// data := ""
-	// for SectionName := range ini.sections {
-	// 	data = data + SectionName + ":\n"
-	// 	for key, value := range ini.sections[SectionName] {
-	// 		data = data + key + " = " + value + "\n"
-	// 	}
-	// 	data = data + "\n"
-	// }
-	// ini.data = data
-	ini.data = fmt.Sprintf("Map: %v", ini.sections)
+	data := ""
+	for SectionName := range ini.sections {
+		data = data + SectionName + ":\n"
+		for key, value := range ini.sections[SectionName] {
+			data = data + key + " = " + value + "\n"
+		}
+		data = data + "\n"
+	}
+	ini.data = data
+	// ini.data = fmt.Sprintf("Map: %v", ini.sections)
 }
 
 func (ini *INIParser) SaveToFile(path string) error {

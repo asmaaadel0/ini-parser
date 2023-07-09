@@ -178,8 +178,8 @@ func TestToString(t *testing.T) {
 	ini := INIParser{}
 
 	ini.LoadFromString(data)
-	ini.ToString()
-	got := ini.data
+	data = ini.String()
+	got := data
 
 	// Compare the parsed config with the expected config
 	if !(strings.Contains(got, "[server]") || strings.Contains(got, "port = 8080") || strings.Contains(got, "[database]") || strings.Contains(got, "host = localhost")) {

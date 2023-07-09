@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"os"
 	"strings"
 )
@@ -11,9 +10,7 @@ import (
 type Config map[string]map[string]string
 
 type INIParser struct {
-	sections     Config
-	sectionNames []string
-	data         string
+	sections Config
 }
 
 func contains(arr []string, str string) bool {
@@ -44,7 +41,6 @@ func (ini *INIParser) LoadFromString(data string) {
 		if line[0] == '[' && line[len(line)-1] == ']' {
 			// set current section with new section name
 			currentSection = strings.TrimSpace(line[1 : len(line)-1])
-			ini.sectionNames = append(ini.sectionNames, currentSection)
 			// create new map with current section
 			ini.sections[currentSection] = make(map[string]string)
 			// if current section not empty
@@ -76,15 +72,19 @@ func (ini *INIParser) GetSections() Config {
 }
 
 func (ini *INIParser) GetSectionNames() []string {
-	return ini.sectionNames
+	sectionNames := []string{}
+	for item := range ini.sections {
+		sectionNames = append(sectionNames, item)
+	}
+	return sectionNames
 }
 
 func (ini *INIParser) Get(SectionName string, key string) (string, error) {
-	if !(contains(ini.sectionNames, SectionName)) {
+	if !(contains(ini.GetSectionNames(), SectionName)) {
 		return "", errors.New("section name doesn't exist")
 	}
-	data := ini.sections[SectionName][key]
-	if data == "" {
+	data, ok := ini.sections[SectionName][key]
+	if !ok {
 		return "", errors.New("key name doesn't exist")
 	}
 	return data, nil
@@ -145,80 +145,81 @@ func (ini *INIParser) Set(SectionName string, key string, value string) {
 // 	fmt.Println("ForwardX11:", topFor)
 // }
 
-func (ini *INIParser) ToString() {
+func (ini *INIParser) String() string {
 	data := ""
-	for _, sectionName := range ini.sectionNames {
+	for _, sectionName := range ini.GetSectionNames() {
 		data += "[" + sectionName + "]\n"
 		for key, value := range ini.sections[sectionName] {
-			data = data + key + " = " + value + "\n"
+			data += key + " = " + value + "\n"
 		}
 		data += "\n"
 	}
-	ini.data = data
+	return data
 }
 
 func (ini *INIParser) SaveToFile(path string) error {
 	file, err := os.Create(path)
 	// check if there is an error in creating
+	data := ini.String()
 	if err != nil {
 		return errors.New("error creating file")
 	}
 	defer file.Close()
 
-	_, err = file.WriteString(ini.data)
+	_, err = file.WriteString(data)
 	return err
 }
 
-func main() {
-	ini := INIParser{}
+// func main() {
+// 	ini := INIParser{}
 
-	file, err := os.Open("config.ini")
-	if err != nil {
-		fmt.Print("Error:", err)
-		return
-	}
-	defer file.Close()
+// 	file, err := os.Open("config.ini")
+// 	if err != nil {
+// 		fmt.Print("Error:", err)
+// 		return
+// 	}
+// 	defer file.Close()
 
-	ini.LoadFromFile(file)
-	if err != nil {
-		fmt.Print("Error:", err)
-		return
-	}
-	sections := ini.GetSections()
-	fmt.Println(sections)
+// 	ini.LoadFromFile(file)
+// 	if err != nil {
+// 		fmt.Print("Error:", err)
+// 		return
+// 	}
+// 	sections := ini.GetSections()
+// 	fmt.Println(sections)
 
-	sectionNames := ini.GetSectionNames()
-	fmt.Println(sectionNames)
+// 	sectionNames := ini.GetSectionNames()
+// 	fmt.Println(sectionNames)
 
-	ini.Set("DEFAULT", "ServerAliveInterval", "asmaa")
-	ini.ToString()
-	data := ini.data
-	fmt.Println(data)
+// 	ini.Set("DEFAULT", "ServerAliveInterval", "asmaa")
+// 	ini.ToString()
+// 	data := ini.data
+// 	fmt.Println(data)
 
-	err = ini.SaveToFile("new.txt")
-	if err != nil {
-		fmt.Print("Error:", err)
-		return
-	}
+// 	err = ini.SaveToFile("new.txt")
+// 	if err != nil {
+// 		fmt.Print("Error:", err)
+// 		return
+// 	}
 
-	data = `[server]
-ip = 127.0.0.1
-port = 8080
+// 	data = `[server]
+// ip = 127.0.0.1
+// port = 8080
 
-[database]
-host = localhost
-port = 5432
-name = mydb`
+// [database]
+// host = localhost
+// port = 5432
+// name = mydb`
 
-	ini.LoadFromString(data)
-	sections = ini.GetSections()
+// 	ini.LoadFromString(data)
+// 	sections = ini.GetSections()
 
-	port, err := ini.Get("server", "port")
-	if err != nil {
-		fmt.Print("Error:", err)
-		return
-	}
-	fmt.Println()
-	fmt.Println()
-	fmt.Println("port:", port)
-}
+// 	port, err := ini.Get("server", "port")
+// 	if err != nil {
+// 		fmt.Print("Error:", err)
+// 		return
+// 	}
+// 	fmt.Println()
+// 	fmt.Println()
+// 	fmt.Println("port:", port)
+// }

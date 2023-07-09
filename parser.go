@@ -16,6 +16,15 @@ type INIParser struct {
 	data         string
 }
 
+func contains(arr []string, str string) bool {
+	for _, a := range arr {
+		if a == str {
+			return true
+		}
+	}
+	return false
+}
+
 func (ini *INIParser) LoadFromString(data string) {
 	ini.sections = Config{}
 
@@ -133,7 +142,7 @@ func (ini *INIParser) Set(SectionName string, key string, value string) {
 // 	fmt.Println("ForwardX11:", topFor)
 // }
 
-func (ini *INIParser) ToString() string {
+func (ini *INIParser) ToString() {
 	data := ""
 	for SectionName := range ini.sections {
 		data = data + SectionName + ":\n"
@@ -143,7 +152,6 @@ func (ini *INIParser) ToString() string {
 		data = data + "\n"
 	}
 	ini.data = data
-	return data
 }
 
 func (ini *INIParser) SaveToFile(path string) error {
@@ -180,7 +188,8 @@ func main() {
 	fmt.Println(sectionNames)
 
 	ini.Set("DEFAULT", "ServerAliveInterval", "asmaa")
-	data := ini.ToString()
+	ini.ToString()
+	data := ini.data
 	fmt.Println(data)
 
 	err = ini.SaveToFile("new.txt")

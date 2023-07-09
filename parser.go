@@ -7,6 +7,10 @@ import (
 	"strings"
 )
 
+var ErrorSectionName = errors.New("section name doesn't exist")
+var ErrorKeyName = errors.New("key name doesn't exist")
+var ErrorCreatingFile = errors.New("error creating file")
+
 type Config map[string]map[string]string
 
 type INIParser struct {
@@ -81,11 +85,11 @@ func (ini *INIParser) GetSectionNames() []string {
 
 func (ini *INIParser) Get(SectionName string, key string) (string, error) {
 	if !(contains(ini.GetSectionNames(), SectionName)) {
-		return "", errors.New("section name doesn't exist")
+		return "", ErrorSectionName
 	}
 	data, ok := ini.sections[SectionName][key]
 	if !ok {
-		return "", errors.New("key name doesn't exist")
+		return "", ErrorKeyName
 	}
 	return data, nil
 }
@@ -162,7 +166,7 @@ func (ini *INIParser) SaveToFile(path string) error {
 	// check if there is an error in creating
 	data := ini.String()
 	if err != nil {
-		return errors.New("error creating file")
+		return ErrorCreatingFile
 	}
 	defer file.Close()
 

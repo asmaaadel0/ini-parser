@@ -96,6 +96,9 @@ func (ini *INIParser) Get(SectionName string, key string) (string, error) {
 }
 
 func (ini *INIParser) Set(SectionName string, key string, value string) {
+	if ini.sections[SectionName] == nil {
+		ini.sections[SectionName] = make(map[string]string)
+	}
 	ini.sections[SectionName][key] = value
 }
 

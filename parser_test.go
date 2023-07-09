@@ -7,19 +7,18 @@ import (
 	"testing"
 )
 
-var want = Config{
-	"server": {
-		"ip":   "127.0.0.1",
-		"port": "8080",
-	},
-	"database": {
-		"host": "localhost",
-		"port": "5432",
-		"name": "mydb",
-	},
-}
-
 func TestLoadFromFile(t *testing.T) {
+	want := Config{
+		"server": {
+			"ip":   "127.0.0.1",
+			"port": "8080",
+		},
+		"database": {
+			"host": "localhost",
+			"port": "5432",
+			"name": "mydb",
+		},
+	}
 
 	ini := INIParser{}
 
@@ -33,13 +32,35 @@ func TestLoadFromFile(t *testing.T) {
 
 	got := ini.sections
 
-	// Compare the parsed config with the expected config
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("config does not match expected config.\nExpected: %+v\nActual: %+v", want, got)
+	}
+
+	want = Config{
+		"database": {
+			"host": "localhost",
+			"port": "5432",
+			"name": "mydb",
+		},
+	}
+
+	if reflect.DeepEqual(got, want) {
+		t.Errorf("error in config")
 	}
 }
 
 func TestLoadFromString(t *testing.T) {
+	want := Config{
+		"server": {
+			"ip":   "127.0.0.1",
+			"port": "8080",
+		},
+		"database": {
+			"host": "localhost",
+			"port": "5432",
+			"name": "mydb",
+		},
+	}
 
 	data := `[server]
 	ip = 127.0.0.1
@@ -55,13 +76,23 @@ func TestLoadFromString(t *testing.T) {
 
 	got := ini.sections
 
-	// Compare the parsed config with the expected config
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("config does not match expected config.\nExpected: %+v\nActual: %+v", want, got)
 	}
 }
 
 func TestGetSections(t *testing.T) {
+	want := Config{
+		"server": {
+			"ip":   "127.0.0.1",
+			"port": "8080",
+		},
+		"database": {
+			"host": "localhost",
+			"port": "5432",
+			"name": "mydb",
+		},
+	}
 
 	file, err := os.Open("test.ini")
 	if err != nil {
@@ -137,6 +168,16 @@ func TestGet(t *testing.T) {
 	if !(got == want) {
 		t.Errorf("Reading value does not match expected value.\nExpected: %+v\nActual: %+v", want, got)
 	}
+
+	got, err = ini.Get("serve", "port")
+	if !(err == ErrorSectionName) {
+		t.Errorf("wrong error")
+	}
+
+	got, err = ini.Get("server", "portt")
+	if !(err == ErrorKeyName) {
+		t.Errorf("wrong error")
+	}
 }
 
 func TestSet(t *testing.T) {
@@ -165,28 +206,18 @@ func TestSet(t *testing.T) {
 	}
 }
 
-func TestToString(t *testing.T) {
-	data := `[server]
-	ip = 127.0.0.1
-	port = 8080
-
-	[database]
-	host = localhost
-	port = 5432
-	name = mydb`
-
-	ini := INIParser{}
-
-	ini.LoadFromString(data)
-	data = ini.String()
-	got := data
-
-	// Compare the parsed config with the expected config
-	if !(strings.Contains(got, "[server]") || strings.Contains(got, "port = 8080") || strings.Contains(got, "[database]") || strings.Contains(got, "host = localhost")) {
-		t.Errorf("config does not match expected config.\nExpected: %+v\nActual: %+v", want, got)
-	}
-}
 func TestString(t *testing.T) {
+	want := Config{
+		"server": {
+			"ip":   "127.0.0.1",
+			"port": "8080",
+		},
+		"database": {
+			"host": "localhost",
+			"port": "5432",
+			"name": "mydb",
+		},
+	}
 	data := `[server]
 	ip = 127.0.0.1
 	port = 8080

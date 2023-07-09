@@ -186,3 +186,46 @@ func TestToString(t *testing.T) {
 		t.Errorf("config does not match expected config.\nExpected: %+v\nActual: %+v", want, got)
 	}
 }
+func TestString(t *testing.T) {
+	data := `[server]
+	ip = 127.0.0.1
+	port = 8080
+
+	[database]
+	host = localhost
+	port = 5432
+	name = mydb`
+
+	ini := INIParser{}
+
+	ini.LoadFromString(data)
+	data = ini.String()
+	got := data
+
+	// Compare the parsed config with the expected config
+	if !(strings.Contains(got, "[server]") || strings.Contains(got, "port = 8080") || strings.Contains(got, "[database]") || strings.Contains(got, "host = localhost")) {
+		t.Errorf("config does not match expected config.\nExpected: %+v\nActual: %+v", want, got)
+	}
+}
+
+func TestSaveToFile(t *testing.T) {
+	file, err := os.Open("test.ini")
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+	}
+	defer file.Close()
+
+	ini := INIParser{}
+
+	ini.LoadFromFile(file)
+	got := ini.SaveToFile("false.txt")
+
+	if !(got == ErrorFileName) {
+		t.Errorf("wrong file name")
+	}
+
+	got = ini.SaveToFile("true.ini")
+	if got == ErrorFileName {
+		t.Errorf("wrong file name")
+	}
+}

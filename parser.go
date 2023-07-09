@@ -10,6 +10,7 @@ import (
 var ErrorSectionName = errors.New("section name doesn't exist")
 var ErrorKeyName = errors.New("key name doesn't exist")
 var ErrorCreatingFile = errors.New("error creating file")
+var ErrorFileName = errors.New("error in file name")
 
 type Config map[string]map[string]string
 
@@ -162,6 +163,9 @@ func (ini *INIParser) String() string {
 }
 
 func (ini *INIParser) SaveToFile(path string) error {
+	if !(strings.Contains(path, ".ini")) {
+		return ErrorFileName
+	}
 	file, err := os.Create(path)
 	// check if there is an error in creating
 	data := ini.String()

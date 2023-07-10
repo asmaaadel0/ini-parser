@@ -111,7 +111,7 @@ func (ini *INIParser) GetSectionNames() []string {
 
 // Get return value for specific section name and key
 func (ini *INIParser) Get(SectionName string, key string) (string, error) {
-	if !(contains(ini.GetSectionNames(), SectionName)) {
+	if ini.sections[SectionName] == nil {
 		return "", ErrorSectionName
 	}
 	data, ok := ini.sections[SectionName][key]

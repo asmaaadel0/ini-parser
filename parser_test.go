@@ -169,12 +169,12 @@ func TestGet(t *testing.T) {
 		t.Errorf("Reading value does not match expected value.\nExpected: %+v\nActual: %+v", want, got)
 	}
 
-	got, err = ini.Get("serve", "port")
+	_, err = ini.Get("serve", "port")
 	if !(err == ErrorSectionName) {
 		t.Errorf("wrong error")
 	}
 
-	got, err = ini.Get("server", "portt")
+	_, err = ini.Get("server", "portt")
 	if !(err == ErrorKeyName) {
 		t.Errorf("wrong error")
 	}

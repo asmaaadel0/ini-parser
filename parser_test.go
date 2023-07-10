@@ -79,6 +79,33 @@ func TestLoadFromString(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("config does not match expected config.\nExpected: %+v\nActual: %+v", want, got)
 	}
+	data = `server]
+	ip = 127.0.0.1
+	port = 8080
+
+	[database]
+	host = localhost
+	port = 5432
+	name = mydb`
+
+	err := ini.LoadFromString(data)
+	if !(err == ErrorInvalidFormat) {
+		t.Errorf("error invalid format")
+	}
+
+	data = `[server]
+	= 127.0.0.1
+	port = 8080
+
+	[database]
+	host = localhost
+	port = 5432
+	name = mydb`
+
+	err = ini.LoadFromString(data)
+	if !(err == ErrorInvalidKeyFormat) {
+		t.Errorf("error invalid key format")
+	}
 }
 
 func TestGetSections(t *testing.T) {
@@ -171,12 +198,12 @@ func TestGet(t *testing.T) {
 
 	_, err = ini.Get("serve", "port")
 	if !(err == ErrorSectionName) {
-		t.Errorf("wrong error")
+		t.Errorf("wrong section name")
 	}
 
 	_, err = ini.Get("server", "portt")
 	if !(err == ErrorKeyName) {
-		t.Errorf("wrong error")
+		t.Errorf("wrong key name")
 	}
 }
 

@@ -3,17 +3,35 @@ package main
 import (
 	"bufio"
 	"errors"
+	"fmt"
+	"io"
 	"os"
+	"path"
 	"strings"
 )
 
+// ErrorSectionName section name doesn't exist
 var ErrorSectionName = errors.New("section name doesn't exist")
+
+// ErrorKeyName key name doesn't exist
 var ErrorKeyName = errors.New("key name doesn't exist")
+
+// ErrorCreatingFile error while creating file
 var ErrorCreatingFile = errors.New("error creating file")
+
+// ErrorFileName error file name
 var ErrorFileName = errors.New("error in file name")
 
+// ErrorInvalidFormat error invalid format
+var ErrorInvalidFormat = errors.New("invalid format")
+
+// ErrorInvalidKeyFormat error invalid key format
+var ErrorInvalidKeyFormat = errors.New("invalid key format")
+
+// Config map for ini parser sections
 type Config map[string]map[string]string
 
+// INIParser ini parser struct
 type INIParser struct {
 	sections Config
 }
@@ -27,55 +45,62 @@ func contains(arr []string, str string) bool {
 	return false
 }
 
-func (ini *INIParser) LoadFromString(data string) {
+// LoadData from reader return error if exist
+func (ini *INIParser) LoadData(data io.Reader) error {
 	ini.sections = Config{}
 
 	currentSection := ""
 
-	scanner := bufio.NewScanner(strings.NewReader(data))
+	scanner := bufio.NewScanner(data)
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
 
-		// skip empty lines and comments
+		// comment or empty line
 		if len(line) == 0 || line[0] == ';' {
 			continue
 		}
 
-		// if line start with "[" and end with "]", it's a new section
 		if line[0] == '[' && line[len(line)-1] == ']' {
-			// set current section with new section name
 			currentSection = strings.TrimSpace(line[1 : len(line)-1])
-			// create new map with current section
 			ini.sections[currentSection] = make(map[string]string)
-			// if current section not empty
 		} else if currentSection != "" {
-			// split line in two pieces with separet "="
 			parts := strings.SplitN(line, "=", 2)
-			// access the first part "key"
 			key := strings.TrimSpace(parts[0])
-			// access the second part "value"
+			if len(key) == 0 {
+				return ErrorInvalidKeyFormat
+			}
 			value := strings.TrimSpace(parts[1])
-			// map value with the key
 			ini.sections[currentSection][key] = value
+		} else if currentSection == "" {
+			return ErrorInvalidFormat
 		}
 	}
+	return nil
 }
 
-func (ini *INIParser) LoadFromFile(file *os.File) {
+// LoadFromString return error if exist
+func (ini *INIParser) LoadFromString(data string) error {
+	return ini.LoadData(strings.NewReader(data))
+}
+
+// LoadFromFile return error if exist
+func (ini *INIParser) LoadFromFile(file *os.File) error {
 	scanner := bufio.NewScanner(file)
 	data := ""
 	for scanner.Scan() {
-		data = data + strings.TrimSpace(scanner.Text()) + "\n"
+		data = fmt.Sprintf("%v %v\n", data, strings.TrimSpace(scanner.Text()))
+		// data += strings.TrimSpace(scanner.Text()) + "\n"
 	}
-
-	ini.LoadFromString(data)
+	return ini.LoadData(strings.NewReader(data))
 }
 
+// GetSections return ini sections
 func (ini *INIParser) GetSections() Config {
 	return ini.sections
 }
 
+// GetSectionNames return ini section names
 func (ini *INIParser) GetSectionNames() []string {
 	sectionNames := []string{}
 	for item := range ini.sections {
@@ -84,6 +109,7 @@ func (ini *INIParser) GetSectionNames() []string {
 	return sectionNames
 }
 
+// Get return value for specific section name and key
 func (ini *INIParser) Get(SectionName string, key string) (string, error) {
 	if !(contains(ini.GetSectionNames(), SectionName)) {
 		return "", ErrorSectionName
@@ -95,6 +121,7 @@ func (ini *INIParser) Get(SectionName string, key string) (string, error) {
 	return data, nil
 }
 
+// Set value for specific key and section
 func (ini *INIParser) Set(SectionName string, key string, value string) {
 	if ini.sections[SectionName] == nil {
 		ini.sections[SectionName] = make(map[string]string)
@@ -102,75 +129,30 @@ func (ini *INIParser) Set(SectionName string, key string, value string) {
 	ini.sections[SectionName][key] = value
 }
 
-// func PrintFunction(config Config) {
-// 	// accessing values from the file.
-// 	defServ, err := Get(config, "DEFAULT", "ServerAliveInterval")
-// 	if err != nil {
-// 		fmt.Print("Error:", err)
-// 		return
-// 	}
-// 	defCom, err := Get(config, "DEFAULT", "Compression")
-// 	if err != nil {
-// 		fmt.Print("Error:", err)
-// 		return
-// 	}
-// 	defComLevel, err := Get(config, "DEFAULT", "CompressionLevel")
-// 	if err != nil {
-// 		fmt.Print("Error:", err)
-// 		return
-// 	}
-// 	defFor, err := Get(config, "DEFAULT", "ForwardX11")
-// 	if err != nil {
-// 		fmt.Print("Error:", err)
-// 		return
-// 	}
-// 	forUser, err := Get(config, "forge.example", "User")
-// 	if err != nil {
-// 		fmt.Print("Error:", err)
-// 		return
-// 	}
-// 	topPort, err := Get(config, "topsecret.server.example", "Port")
-// 	if err != nil {
-// 		fmt.Print("Error:", err)
-// 		return
-// 	}
-// 	topFor, err := Get(config, "topsecret.server.example", "ForwardX11")
-// 	if err != nil {
-// 		fmt.Print("Error:", err)
-// 		return
-// 	}
-// 	fmt.Println("DEFAULT Configuration:")
-// 	fmt.Println("ServerAliveInterval:", defServ)
-// 	fmt.Println("Compression:", defCom)
-// 	fmt.Println("CompressionLevel:", defComLevel)
-// 	fmt.Println("ForwardX11:", defFor)
-// 	fmt.Println()
-// 	fmt.Println("forge.example Configuration:")
-// 	fmt.Println("User:", forUser)
-// 	fmt.Println()
-// 	fmt.Println("topsecret.server.example Configuration:")
-// 	fmt.Println("Port:", topPort)
-// 	fmt.Println("ForwardX11:", topFor)
-// }
-
+// String return string for ini data
 func (ini *INIParser) String() string {
 	data := ""
 	for _, sectionName := range ini.GetSectionNames() {
-		data += "[" + sectionName + "]\n"
+
+		data = fmt.Sprintf("%v[%v]\n", data, sectionName)
+		// data += "[" + sectionName + "]\n"
 		for key, value := range ini.sections[sectionName] {
-			data += key + " = " + value + "\n"
+			data = fmt.Sprintf("%v%v = %v \n", data, key, value)
+			// data += key + " = " + value + "\n"
 		}
 		data += "\n"
 	}
 	return data
 }
 
-func (ini *INIParser) SaveToFile(path string) error {
-	if !(strings.Contains(path, ".ini")) {
+// SaveToFile converted data to string
+func (ini *INIParser) SaveToFile(filePath string) error {
+
+	fileExt := path.Ext(filePath)
+	if !(fileExt == ".ini") {
 		return ErrorFileName
 	}
-	file, err := os.Create(path)
-	// check if there is an error in creating
+	file, err := os.Create(filePath)
 	data := ini.String()
 	if err != nil {
 		return ErrorCreatingFile

@@ -20,7 +20,7 @@ var ErrorKeyName = errors.New("key name doesn't exist")
 var ErrorCreatingFile = errors.New("error creating file")
 
 // ErrorFileName error file name
-var ErrorFileName = errors.New("error in file name")
+var ErrorFileName = errors.New("invalid file name")
 
 // ErrorInvalidFormat error invalid format
 var ErrorInvalidFormat = errors.New("invalid format")

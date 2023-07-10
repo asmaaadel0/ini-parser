@@ -137,7 +137,7 @@ func (ini *INIParser) String() string {
 		data = fmt.Sprintf("%v[%v]\n", data, sectionName)
 		// data += "[" + sectionName + "]\n"
 		for key, value := range ini.sections[sectionName] {
-			data = fmt.Sprintf("%v%v = %v \n", data, key, value)
+			data = fmt.Sprintf("%v%v=%v \n", data, key, value)
 			// data += key + " = " + value + "\n"
 		}
 		data += "\n"

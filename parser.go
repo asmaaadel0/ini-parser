@@ -39,6 +39,11 @@ type INIParser struct {
 	sections Config
 }
 
+// NewParser returns a new ini Parser object.
+func NewINIParser() INIParser {
+	return INIParser{sections: make(Config)}
+}
+
 func (ini *INIParser) loadData(data io.Reader) error {
 	ini.sections = Config{}
 

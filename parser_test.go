@@ -29,7 +29,7 @@ func TestLoadFromFile(t *testing.T) {
 		},
 	}
 
-	ini := INIParser{}
+	ini := NewINIParser()
 
 	file, err := os.Open("tests/test.ini")
 	if err != nil {
@@ -80,7 +80,7 @@ func TestLoadFromString(t *testing.T) {
 	port = 5432
 	name = mydb`
 
-	ini := INIParser{}
+	ini := NewINIParser()
 	ini.LoadFromString(data)
 
 	got := ini.sections
@@ -136,7 +136,7 @@ func TestGetSections(t *testing.T) {
 	}
 	defer file.Close()
 
-	ini := INIParser{}
+	ini := NewINIParser()
 
 	ini.LoadFromFile(file)
 	if err != nil {
@@ -161,7 +161,7 @@ func TestGetSectionNames(t *testing.T) {
 	}
 	defer file.Close()
 
-	ini := INIParser{}
+	ini := NewINIParser()
 
 	ini.LoadFromFile(file)
 	if err != nil {
@@ -188,7 +188,7 @@ func TestGet(t *testing.T) {
 		t.Fatalf("Error: %v", err)
 	}
 	defer file.Close()
-	ini := INIParser{}
+	ini := NewINIParser()
 
 	ini.LoadFromFile(file)
 	if err != nil {
@@ -225,7 +225,7 @@ func TestSet(t *testing.T) {
 	}
 	defer file.Close()
 
-	ini := INIParser{}
+	ini := NewINIParser()
 
 	ini.LoadFromFile(file)
 	if err != nil {
@@ -269,7 +269,7 @@ func TestString(t *testing.T) {
 	port = 5432
 	name = mydb`
 
-	ini := INIParser{}
+	ini := NewINIParser()
 
 	ini.LoadFromString(data)
 	data = ini.String()
@@ -288,7 +288,7 @@ func TestSaveToFile(t *testing.T) {
 	}
 	defer file.Close()
 
-	ini := INIParser{}
+	ini := NewINIParser()
 
 	ini.LoadFromFile(file)
 	got := ini.SaveToFile("tests/false.txt")

@@ -10,8 +10,8 @@ import (
 	"strings"
 )
 
-// ErrorSectionName section name doesn't exist
-var ErrorSectionName = errors.New("section name doesn't exist")
+// SectionNotFound section name doesn't exist
+var SectionNotFound = errors.New("section name doesn't exist")
 
 // ErrorKeyName key name doesn't exist
 var ErrorKeyName = errors.New("key name doesn't exist")
@@ -36,17 +36,7 @@ type INIParser struct {
 	sections Config
 }
 
-func contains(arr []string, str string) bool {
-	for _, a := range arr {
-		if a == str {
-			return true
-		}
-	}
-	return false
-}
-
-// LoadData from reader return error if exist
-func (ini *INIParser) LoadData(data io.Reader) error {
+func (ini *INIParser) loadData(data io.Reader) error {
 	ini.sections = Config{}
 
 	currentSection := ""
@@ -57,7 +47,7 @@ func (ini *INIParser) LoadData(data io.Reader) error {
 		line := strings.TrimSpace(scanner.Text())
 
 		// comment or empty line
-		if len(line) == 0 || line[0] == ';' {
+		if len(line) == 0 || line[0] == ';' || line[0] == '#' {
 			continue
 		}
 
@@ -66,13 +56,16 @@ func (ini *INIParser) LoadData(data io.Reader) error {
 			ini.sections[currentSection] = make(map[string]string)
 		} else if currentSection != "" {
 			parts := strings.Split(line, "=")
+			if len(parts) != 2 {
+				return ErrorInvalidFormat
+			}
 			key := strings.TrimSpace(parts[0])
 			if len(key) == 0 {
 				return ErrorInvalidKeyFormat
 			}
 			value := strings.TrimSpace(parts[1])
 			ini.sections[currentSection][key] = value
-		} else if currentSection == "" {
+		} else {
 			return ErrorInvalidFormat
 		}
 	}
@@ -81,18 +74,12 @@ func (ini *INIParser) LoadData(data io.Reader) error {
 
 // LoadFromString return error if exist
 func (ini *INIParser) LoadFromString(data string) error {
-	return ini.LoadData(strings.NewReader(data))
+	return ini.loadData(strings.NewReader(data))
 }
 
 // LoadFromFile return error if exist
 func (ini *INIParser) LoadFromFile(file *os.File) error {
-	scanner := bufio.NewScanner(file)
-	data := ""
-	for scanner.Scan() {
-		data = fmt.Sprintf("%v %v\n", data, strings.TrimSpace(scanner.Text()))
-		// data += strings.TrimSpace(scanner.Text()) + "\n"
-	}
-	return ini.LoadData(strings.NewReader(data))
+	return ini.loadData(file)
 }
 
 // GetSections return ini sections
@@ -112,7 +99,7 @@ func (ini *INIParser) GetSectionNames() []string {
 // Get return value for specific section name and key
 func (ini *INIParser) Get(SectionName string, key string) (string, error) {
 	if ini.sections[SectionName] == nil {
-		return "", ErrorSectionName
+		return "", SectionNotFound
 	}
 	data, ok := ini.sections[SectionName][key]
 	if !ok {
@@ -134,11 +121,9 @@ func (ini *INIParser) String() string {
 	data := ""
 	for _, sectionName := range ini.GetSectionNames() {
 
-		data = fmt.Sprintf("%v[%v]\n", data, sectionName)
-		// data += "[" + sectionName + "]\n"
+		data += fmt.Sprintf("[%s]\n", sectionName)
 		for key, value := range ini.sections[sectionName] {
-			data = fmt.Sprintf("%v%v=%v \n", data, key, value)
-			// data += key + " = " + value + "\n"
+			data += fmt.Sprintf("%s=%s\n", key, value)
 		}
 		data += "\n"
 	}
@@ -162,57 +147,3 @@ func (ini *INIParser) SaveToFile(filePath string) error {
 	_, err = file.WriteString(data)
 	return err
 }
-
-// func main() {
-// 	ini := INIParser{}
-
-// 	file, err := os.Open("config.ini")
-// 	if err != nil {
-// 		fmt.Print("Error:", err)
-// 		return
-// 	}
-// 	defer file.Close()
-
-// 	ini.LoadFromFile(file)
-// 	if err != nil {
-// 		fmt.Print("Error:", err)
-// 		return
-// 	}
-// 	sections := ini.GetSections()
-// 	fmt.Println(sections)
-
-// 	sectionNames := ini.GetSectionNames()
-// 	fmt.Println(sectionNames)
-
-// 	ini.Set("DEFAULT", "ServerAliveInterval", "asmaa")
-// 	ini.ToString()
-// 	data := ini.data
-// 	fmt.Println(data)
-
-// 	err = ini.SaveToFile("new.txt")
-// 	if err != nil {
-// 		fmt.Print("Error:", err)
-// 		return
-// 	}
-
-// 	data = `[server]
-// ip = 127.0.0.1
-// port = 8080
-
-// [database]
-// host = localhost
-// port = 5432
-// name = mydb`
-
-// 	ini.LoadFromString(data)
-// 	sections = ini.GetSections()
-
-// 	port, err := ini.Get("server", "port")
-// 	if err != nil {
-// 		fmt.Print("Error:", err)
-// 		return
-// 	}
-// 	fmt.Println()
-// 	fmt.Println()
-// 	fmt.Println("port:", port)
-// }

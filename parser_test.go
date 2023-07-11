@@ -7,6 +7,15 @@ import (
 	"testing"
 )
 
+func contains(arr []string, str string) bool {
+	for _, a := range arr {
+		if a == str {
+			return true
+		}
+	}
+	return false
+}
+
 func TestLoadFromFile(t *testing.T) {
 	want := Config{
 		"server": {
@@ -197,7 +206,7 @@ func TestGet(t *testing.T) {
 	}
 
 	_, err = ini.Get("serve", "port")
-	if !(err == ErrorSectionName) {
+	if !(err == SectionNotFound) {
 		t.Errorf("wrong section name")
 	}
 

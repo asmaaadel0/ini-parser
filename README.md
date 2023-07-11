@@ -1,6 +1,5 @@
 # 📝 Table of Contents
 
-- [📝 Table of Contents](#-table-of-contents)
   - [About ](#about-)
   - [Features ](#features-)
   - [How to Use ](#how-to-use-)
@@ -20,70 +19,63 @@ This is a simple INI parser project written in Go. It allows you to parse and ma
 
 ## How to Use <a name = "How-to-Use"></a>
 
-- Import the main package into your Go program :
-
+- Create a new ini Parser object using  "NewINIParser" function:
 ```sh
-import "path/to/main"
+	ini := NewINIParser()
 ```
 
-- Load Data from String using the LoadFromString function:
+- Load Data from String using "LoadFromString" function:
 
 ```sh
-data, err := main.LoadFromString("config.ini")
+	err := ini.LoadFromString(data)
+	if err != nil {
+		return err
+	}
 ```
 
-- Load Data from file using the LoadFromFile function:
+- Load Data from file using "LoadFromFile" function:
 
 ```sh
-file, err := os.Open("config.ini")
-if err != nil {
-  fmt.Print("Error:", err)
-  return
-}
-defer file.Close()
-data, err := LoadFromFile(file)
-if err != nil {
-  fmt.Print("Error:", err)
-  return
-}
+	err := ini.LoadFromFile("tests/test.ini")
+	if err != nil {
+		return err
+	}
 ```
 
-- Get all sections from config file using the GetSections function:
+- Get all sections from config file using "GetSections" function:
 
 ```sh
-config := main.GetSections(data)
+	sections := main.GetSections(data)
 ```
 
-- Access configuration values by section and key using the Get function:
+- Access configuration values by section and key using "Get" function:
 
 ```sh
-value, err := main.Get(config, "section", "key")
-if err != nil {
-    fmt.Print("Error:", err)
-    return
-}
+	got, err := ini.Get("section", "section")
+	if err != nil {
+		return err
+	}
 ```
 
-- Set new values for keys using the Set function:
+- Set new values for keys using "Set" function:
 
 ```sh
-main.Set(config, "section", "key", "new_value")
+	ini.Set(config, "section", "key", "new_value")
 ```
 
-- Convert Sections to String using the ToString function:
+- Convert Sections to String using "String" function:
 
 ```sh
-data = main.ToString(config)
+	data = ini.String()
 ```
 
-- Write the modified configuration to a new text file using the SaveToFile function:
+- Write the modified configuration to a new text file using "SaveToFile" function:
 
 ```sh
-err = main.SaveToFile(config)
-if err != nil {
-    fmt.Println("Error:", err)
-    return
-}
+	err := ini.SaveToFile("file.ini")
+	if err != nil {
+		return err
+	}
 ```
 
 ## Contributors <a name = "Contributors"></a>

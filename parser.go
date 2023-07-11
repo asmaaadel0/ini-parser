@@ -19,8 +19,8 @@ var ErrorKeyName = errors.New("key name doesn't exist")
 // ErrorCreatingFile error while creating file
 var ErrorCreatingFile = errors.New("error creating file")
 
-// ErrorFileName error file name
-var ErrorFileName = errors.New("invalid file name")
+// ErrorFileExtension error file extension
+var ErrorFileExtension = errors.New("invalid file extension")
 
 // ErrorInvalidFormat error invalid format
 var ErrorInvalidFormat = errors.New("invalid format")
@@ -90,7 +90,18 @@ func (ini *INIParser) LoadFromString(data string) error {
 }
 
 // LoadFromFile return error if exist
-func (ini *INIParser) LoadFromFile(file *os.File) error {
+func (ini *INIParser) LoadFromFile(filePath string) error {
+	fileExt := path.Ext(filePath)
+	if fileExt != ".ini" {
+		return ErrorFileExtension
+	}
+
+	file, err := os.Open(filePath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
 	return ini.loadData(file)
 }
 
@@ -147,7 +158,7 @@ func (ini *INIParser) SaveToFile(filePath string) error {
 
 	fileExt := path.Ext(filePath)
 	if !(fileExt == ".ini") {
-		return ErrorFileName
+		return ErrorFileExtension
 	}
 	data := ini.String()
 	dataBytes := []byte(data)

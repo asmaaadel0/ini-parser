@@ -1,7 +1,6 @@
 package main
 
 import (
-	"os"
 	"reflect"
 	"strings"
 	"testing"
@@ -31,13 +30,10 @@ func TestLoadFromFile(t *testing.T) {
 
 	ini := NewINIParser()
 
-	file, err := os.Open("tests/test.ini")
+	err := ini.LoadFromFile("tests/test.ini")
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}
-	defer file.Close()
-
-	ini.LoadFromFile(file)
 
 	got := ini.sections
 
@@ -130,17 +126,11 @@ func TestGetSections(t *testing.T) {
 		},
 	}
 
-	file, err := os.Open("tests/test.ini")
-	if err != nil {
-		t.Fatalf("Error: %v", err)
-	}
-	defer file.Close()
-
 	ini := NewINIParser()
 
-	ini.LoadFromFile(file)
+	err := ini.LoadFromFile("tests/test.ini")
 	if err != nil {
-		t.Fatalf("Error Reading file: %v", err)
+		t.Fatalf("Error: %v", err)
 	}
 
 	got := ini.GetSections()
@@ -155,17 +145,11 @@ func TestGetSectionNames(t *testing.T) {
 
 	want := []string{"server", "database"}
 
-	file, err := os.Open("tests/test.ini")
-	if err != nil {
-		t.Fatalf("Error: %v", err)
-	}
-	defer file.Close()
-
 	ini := NewINIParser()
 
-	ini.LoadFromFile(file)
+	err := ini.LoadFromFile("tests/test.ini")
 	if err != nil {
-		t.Fatalf("Error Reading file: %v", err)
+		t.Fatalf("Error: %v", err)
 	}
 
 	got := ini.GetSectionNames()
@@ -183,16 +167,11 @@ func TestGetSectionNames(t *testing.T) {
 func TestGet(t *testing.T) {
 
 	want := "8080"
-	file, err := os.Open("tests/test.ini")
-	if err != nil {
-		t.Fatalf("Error: %v", err)
-	}
-	defer file.Close()
 	ini := NewINIParser()
 
-	ini.LoadFromFile(file)
+	err := ini.LoadFromFile("tests/test.ini")
 	if err != nil {
-		t.Fatalf("Error Reading file: %v", err)
+		t.Fatalf("Error: %v", err)
 	}
 
 	got, err := ini.Get("server", "port")
@@ -219,17 +198,12 @@ func TestGet(t *testing.T) {
 func TestSet(t *testing.T) {
 
 	want := "8000"
-	file, err := os.Open("tests/test.ini")
-	if err != nil {
-		t.Fatalf("Error: %v", err)
-	}
-	defer file.Close()
 
 	ini := NewINIParser()
 
-	ini.LoadFromFile(file)
+	err := ini.LoadFromFile("tests/test.ini")
 	if err != nil {
-		t.Fatalf("Error Reading file: %v", err)
+		t.Fatalf("Error: %v", err)
 	}
 
 	ini.Set("database", "port", "8000")
@@ -282,23 +256,21 @@ func TestString(t *testing.T) {
 }
 
 func TestSaveToFile(t *testing.T) {
-	file, err := os.Open("tests/test.ini")
-	if err != nil {
-		t.Fatalf("Error: %v", err)
-	}
-	defer file.Close()
 
 	ini := NewINIParser()
 
-	ini.LoadFromFile(file)
+	err := ini.LoadFromFile("tests/test.ini")
+	if err != nil {
+		t.Fatalf("Error: %v", err)
+	}
 	got := ini.SaveToFile("tests/false.txt")
 
-	if !(got == ErrorFileName) {
+	if !(got == ErrorFileExtension) {
 		t.Errorf("wrong file name")
 	}
 
 	got = ini.SaveToFile("tests/true.ini")
-	if got == ErrorFileName {
+	if got == ErrorFileExtension {
 		t.Errorf("wrong file name")
 	}
 }

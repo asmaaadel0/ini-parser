@@ -28,6 +28,9 @@ var ErrorInvalidFormat = errors.New("invalid format")
 // ErrorInvalidKeyFormat error invalid key format
 var ErrorInvalidKeyFormat = errors.New("invalid key format")
 
+// RedefiningSection section already defined
+var RedefiningSection = errors.New("section with same key already defined")
+
 // Config map for ini parser sections
 type Config map[string]map[string]string
 
@@ -64,6 +67,10 @@ func (ini *INIParser) loadData(data io.Reader) error {
 				return ErrorInvalidKeyFormat
 			}
 			value := strings.TrimSpace(parts[1])
+			_, err := ini.Get(currentSection, key)
+			if err == nil {
+				return RedefiningSection
+			}
 			ini.sections[currentSection][key] = value
 		} else {
 			return ErrorInvalidFormat
@@ -137,13 +144,7 @@ func (ini *INIParser) SaveToFile(filePath string) error {
 	if !(fileExt == ".ini") {
 		return ErrorFileName
 	}
-	file, err := os.Create(filePath)
 	data := ini.String()
-	if err != nil {
-		return ErrorCreatingFile
-	}
-	defer file.Close()
-
-	_, err = file.WriteString(data)
-	return err
+	dataBytes := []byte(data)
+	return os.WriteFile(filePath, dataBytes, 0644)
 }

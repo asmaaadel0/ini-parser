@@ -82,8 +82,10 @@ func TestLoadFromString(t *testing.T) {
 	name = mydb`
 
 	ini := NewINIParser()
-	ini.LoadFromString(data)
-
+	err := ini.LoadFromString(data)
+	if err != nil {
+		t.Errorf("Error:%v", err)
+	}
 	got := ini.sections
 
 	if !reflect.DeepEqual(got, want) {
@@ -98,7 +100,7 @@ func TestLoadFromString(t *testing.T) {
 	port = 5432
 	name = mydb`
 
-	err := ini.LoadFromString(data)
+	err = ini.LoadFromString(data)
 	if !(err == ErrorInvalidFormat) {
 		t.Errorf("error invalid format")
 	}
@@ -250,7 +252,11 @@ func TestString(t *testing.T) {
 
 	ini := NewINIParser()
 
-	ini.LoadFromString(data)
+	err := ini.LoadFromString(data)
+	if err != nil {
+		t.Errorf("Error:%v", err)
+	}
+
 	data = ini.String()
 	got := data
 

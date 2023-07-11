@@ -16,9 +16,6 @@ var SectionNotFound = errors.New("section name doesn't exist")
 // ErrorKeyName key name doesn't exist
 var ErrorKeyName = errors.New("key name doesn't exist")
 
-// ErrorCreatingFile error while creating file
-var ErrorCreatingFile = errors.New("error creating file")
-
 // ErrorFileExtension error file extension
 var ErrorFileExtension = errors.New("invalid file extension")
 

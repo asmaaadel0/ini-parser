@@ -31,6 +31,9 @@ var ErrorInvalidKeyFormat = errors.New("invalid key format")
 // RedefiningSection section already defined
 var RedefiningSection = errors.New("section with same key already defined")
 
+// ErrorOpeningFile error while opening file
+var ErrorOpeningFile = errors.New("eror opening file")
+
 // Config map for ini parser sections
 type Config map[string]map[string]string
 
@@ -98,7 +101,7 @@ func (ini *INIParser) LoadFromFile(filePath string) error {
 
 	file, err := os.Open(filePath)
 	if err != nil {
-		return err
+		return ErrorOpeningFile
 	}
 	defer file.Close()
 

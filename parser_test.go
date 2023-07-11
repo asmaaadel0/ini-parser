@@ -52,6 +52,11 @@ func TestLoadFromFile(t *testing.T) {
 	if reflect.DeepEqual(got, want) {
 		t.Errorf("error in config")
 	}
+
+	err = ini.LoadFromFile("tests/testt.ini")
+	if !(err == ErrorOpeningFile) {
+		t.Errorf("error in file")
+	}
 }
 
 func TestLoadFromString(t *testing.T) {

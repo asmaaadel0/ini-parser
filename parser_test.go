@@ -147,6 +147,9 @@ func TestGetSections(t *testing.T) {
 	}
 
 	err = ini.LoadFromFile(filePath)
+	if err != nil {
+		t.Errorf("Error:%v", err)
+	}
 
 	got := ini.GetSections()
 
@@ -172,6 +175,9 @@ func TestGetSectionNames(t *testing.T) {
 	}
 
 	err = ini.LoadFromFile(filePath)
+	if err != nil {
+		t.Errorf("Error:%v", err)
+	}
 
 	got := ini.GetSectionNames()
 
@@ -200,6 +206,9 @@ func TestGet(t *testing.T) {
 	}
 
 	err = ini.LoadFromFile(filePath)
+	if err != nil {
+		t.Errorf("Error:%v", err)
+	}
 
 	if err != nil {
 		t.Fatalf("Error: %v", err)
@@ -242,6 +251,9 @@ func TestSet(t *testing.T) {
 	}
 
 	err = ini.LoadFromFile(filePath)
+	if err != nil {
+		t.Errorf("Error:%v", err)
+	}
 
 	ini.Set("database", "port", "8000")
 
@@ -293,6 +305,10 @@ func TestSaveToFile(t *testing.T) {
 	}
 
 	err = ini.LoadFromFile(filePath)
+	if err != nil {
+		t.Errorf("Error:%v", err)
+	}
+
 	got := ini.SaveToFile("false.txt")
 
 	if !(got == ErrorFileExtension) {

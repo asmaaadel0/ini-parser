@@ -96,7 +96,7 @@ protected = true
 
 ```
 
-## how to test
+## How to test
 
 - Run the tests by running:
 

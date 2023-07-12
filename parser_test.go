@@ -1,10 +1,54 @@
 package main
 
 import (
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
 )
+
+var validData = `
+[server]
+ip = 127.0.0.1
+port = 8080
+
+[database]
+host = localhost
+port = 5432
+name = mydb`
+
+var invalidSectionName = `
+server]
+ip = 127.0.0.1
+port = 8080
+
+[database]
+host = localhost
+port = 5432
+name = mydb`
+
+var invalidKey = `
+[server]
+= 127.0.0.1
+port = 8080
+
+[database]
+host = localhost
+port = 5432
+name = mydb`
+
+var configData = Config{
+	"server": {
+		"ip":   "127.0.0.1",
+		"port": "8080",
+	},
+	"database": {
+		"host": "localhost",
+		"port": "5432",
+		"name": "mydb",
+	},
+}
 
 func contains(arr []string, str string) bool {
 	for _, a := range arr {
@@ -16,21 +60,20 @@ func contains(arr []string, str string) bool {
 }
 
 func TestLoadFromFile(t *testing.T) {
-	want := Config{
-		"server": {
-			"ip":   "127.0.0.1",
-			"port": "8080",
-		},
-		"database": {
-			"host": "localhost",
-			"port": "5432",
-			"name": "mydb",
-		},
-	}
+	want := configData
 
 	ini := NewINIParser()
 
-	err := ini.LoadFromFile("tests/test.ini")
+	dir := t.TempDir()
+	filePath := filepath.Join(dir, "config.ini")
+
+	err := os.WriteFile(filePath, []byte(validData), 0644)
+
+	if err != nil {
+		t.Fatalf("error creating temp file: %v", err)
+	}
+
+	err = ini.LoadFromFile(filePath)
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}
@@ -60,26 +103,9 @@ func TestLoadFromFile(t *testing.T) {
 }
 
 func TestLoadFromString(t *testing.T) {
-	want := Config{
-		"server": {
-			"ip":   "127.0.0.1",
-			"port": "8080",
-		},
-		"database": {
-			"host": "localhost",
-			"port": "5432",
-			"name": "mydb",
-		},
-	}
+	want := configData
 
-	data := `[server]
-	ip = 127.0.0.1
-	port = 8080
-
-	[database]
-	host = localhost
-	port = 5432
-	name = mydb`
+	data := validData
 
 	ini := NewINIParser()
 	err := ini.LoadFromString(data)
@@ -91,28 +117,14 @@ func TestLoadFromString(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("config does not match expected config.\nExpected: %+v\nActual: %+v", want, got)
 	}
-	data = `server]
-	ip = 127.0.0.1
-	port = 8080
-
-	[database]
-	host = localhost
-	port = 5432
-	name = mydb`
+	data = invalidSectionName
 
 	err = ini.LoadFromString(data)
 	if !(err == ErrorInvalidFormat) {
 		t.Errorf("error invalid format")
 	}
 
-	data = `[server]
-	= 127.0.0.1
-	port = 8080
-
-	[database]
-	host = localhost
-	port = 5432
-	name = mydb`
+	data = invalidKey
 
 	err = ini.LoadFromString(data)
 	if !(err == ErrorInvalidKeyFormat) {
@@ -121,24 +133,20 @@ func TestLoadFromString(t *testing.T) {
 }
 
 func TestGetSections(t *testing.T) {
-	want := Config{
-		"server": {
-			"ip":   "127.0.0.1",
-			"port": "8080",
-		},
-		"database": {
-			"host": "localhost",
-			"port": "5432",
-			"name": "mydb",
-		},
-	}
+	want := configData
 
 	ini := NewINIParser()
 
-	err := ini.LoadFromFile("tests/test.ini")
+	dir := t.TempDir()
+	filePath := filepath.Join(dir, "config.ini")
+
+	err := os.WriteFile(filePath, []byte(validData), 0644)
+
 	if err != nil {
-		t.Fatalf("Error: %v", err)
+		t.Fatalf("error creating temp file: %v", err)
 	}
+
+	err = ini.LoadFromFile(filePath)
 
 	got := ini.GetSections()
 
@@ -154,10 +162,16 @@ func TestGetSectionNames(t *testing.T) {
 
 	ini := NewINIParser()
 
-	err := ini.LoadFromFile("tests/test.ini")
+	dir := t.TempDir()
+	filePath := filepath.Join(dir, "config.ini")
+
+	err := os.WriteFile(filePath, []byte(validData), 0644)
+
 	if err != nil {
-		t.Fatalf("Error: %v", err)
+		t.Fatalf("error creating temp file: %v", err)
 	}
+
+	err = ini.LoadFromFile(filePath)
 
 	got := ini.GetSectionNames()
 
@@ -176,7 +190,17 @@ func TestGet(t *testing.T) {
 	want := "8080"
 	ini := NewINIParser()
 
-	err := ini.LoadFromFile("tests/test.ini")
+	dir := t.TempDir()
+	filePath := filepath.Join(dir, "config.ini")
+
+	err := os.WriteFile(filePath, []byte(validData), 0644)
+
+	if err != nil {
+		t.Fatalf("error creating temp file: %v", err)
+	}
+
+	err = ini.LoadFromFile(filePath)
+
 	if err != nil {
 		t.Fatalf("Error: %v", err)
 	}
@@ -208,10 +232,16 @@ func TestSet(t *testing.T) {
 
 	ini := NewINIParser()
 
-	err := ini.LoadFromFile("tests/test.ini")
+	dir := t.TempDir()
+	filePath := filepath.Join(dir, "config.ini")
+
+	err := os.WriteFile(filePath, []byte(validData), 0644)
+
 	if err != nil {
-		t.Fatalf("Error: %v", err)
+		t.Fatalf("error creating temp file: %v", err)
 	}
+
+	err = ini.LoadFromFile(filePath)
 
 	ini.Set("database", "port", "8000")
 
@@ -230,25 +260,8 @@ func TestSet(t *testing.T) {
 }
 
 func TestString(t *testing.T) {
-	want := Config{
-		"server": {
-			"ip":   "127.0.0.1",
-			"port": "8080",
-		},
-		"database": {
-			"host": "localhost",
-			"port": "5432",
-			"name": "mydb",
-		},
-	}
-	data := `[server]
-	ip = 127.0.0.1
-	port = 8080
-
-	[database]
-	host = localhost
-	port = 5432
-	name = mydb`
+	want := configData
+	data := validData
 
 	ini := NewINIParser()
 
@@ -270,17 +283,23 @@ func TestSaveToFile(t *testing.T) {
 
 	ini := NewINIParser()
 
-	err := ini.LoadFromFile("tests/test.ini")
+	dir := t.TempDir()
+	filePath := filepath.Join(dir, "config.ini")
+
+	err := os.WriteFile(filePath, []byte(validData), 0644)
+
 	if err != nil {
-		t.Fatalf("Error: %v", err)
+		t.Fatalf("error creating temp file: %v", err)
 	}
-	got := ini.SaveToFile("tests/false.txt")
+
+	err = ini.LoadFromFile(filePath)
+	got := ini.SaveToFile("false.txt")
 
 	if !(got == ErrorFileExtension) {
 		t.Errorf("wrong file name")
 	}
 
-	got = ini.SaveToFile("tests/true.ini")
+	got = ini.SaveToFile("true.ini")
 	if got == ErrorFileExtension {
 		t.Errorf("wrong file name")
 	}

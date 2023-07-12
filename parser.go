@@ -63,6 +63,9 @@ func (ini *INIParser) loadData(data io.Reader) error {
 			currentSection = strings.TrimSpace(line[1 : len(line)-1])
 			ini.sections[currentSection] = make(map[string]string)
 		} else if currentSection != "" {
+			if !strings.Contains(line, "=") {
+				return ErrorInvalidFormat
+			}
 			parts := strings.Split(line, "=")
 			if len(parts) != 2 {
 				return ErrorInvalidFormat

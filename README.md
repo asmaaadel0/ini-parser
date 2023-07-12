@@ -1,25 +1,27 @@
-# 📝 Table of Contents
+# INI Parser
 
-  - [About ](#about-)
-  - [Features ](#features-)
-  - [How to Use ](#how-to-use-)
-  - [Contributors ](#contributors-)
-  - [License ](#license-)
+This is package provides INI parser written in Go. It allows you to parse and manipulate INI configuration files.
 
-## About <a name = "About"></a>
+## Features
 
-This is a simple INI parser project written in Go. It allows you to parse and manipulate INI configuration files.
-
-## Features <a name = "Features"></a>
-
-- Parse an INI file and retrieve configuration values.
-- Print the current configuration values to the console.
+- Parse an INI Data from String and retrieve configuration values.
+- Parse an INI Data from file and retrieve configuration values.
+- Get all sections from configuration.
 - Set new values for keys in the INI file.
+- Get configuration value with section and key
+- Convert Sections to String.
 - Write the modified configuration to a new text file.
 
-## How to Use <a name = "How-to-Use"></a>
+## How to Use
 
-- Create a new ini Parser object using  "NewINIParser" function:
+- Import package
+
+```sh
+  import "github.com/codescalersinternships/iniparser-Asmaa"
+```
+
+- Create a new ini Parser object using "NewINIParser" function:
+
 ```sh
 	ini := NewINIParser()
 ```
@@ -45,7 +47,7 @@ This is a simple INI parser project written in Go. It allows you to parse and ma
 - Get all sections from config file using "GetSections" function:
 
 ```sh
-	sections := main.GetSections(data)
+	sections := ini.GetSections(data)
 ```
 
 - Access configuration values by section and key using "Get" function:
@@ -78,19 +80,28 @@ This is a simple INI parser project written in Go. It allows you to parse and ma
 	}
 ```
 
-## Contributors <a name = "Contributors"></a>
+## INI file Example
 
-<table>
-  <tr>
-    <td align="center">
-    <a href="https://github.com/asmaaadel0" target="_black">
-    <img src="https://avatars.githubusercontent.com/u/88618793?s=400&u=886a14dc5ef5c205a8e51942efe9665ed8fd4717&v=4" width="150px;" alt="Asmaa Adel"/>
-    <br />
-    <sub><b>Asmaa Adel</b></sub></a>
-    
-  </tr>
- </table>
+```sh
+[owner]
+name = John
+organization = threefold
 
-## License <a name = "License"></a>
+[database]
+version = 12.6
+server = 192.0.2.62
+port = 143
+password = 123456
+protected = true
 
-- INI Parser is open source and released under the MIT License.
+```
+
+## how to test
+
+- Run the tests by running:
+
+```sh
+go test
+```
+
+- If all tests pass, the output indicate that the tests have passed. if there is failure, the output will provide information about it.

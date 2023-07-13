@@ -23,7 +23,7 @@ import "github.com/codescalersinternships/iniparser-Asmaa"
 - Create a new ini Parser object using "NewINIParser" function:
 
 ```sh
-ini := NewINIParser()
+ini := iniparser.NewINIParser()
 ```
 
 - Load Data from String using "LoadFromString" function:

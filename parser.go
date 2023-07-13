@@ -31,21 +31,24 @@ var RedefiningSection = errors.New("section with same key already defined")
 // ErrorOpeningFile error while opening file
 var ErrorOpeningFile = errors.New("eror opening file")
 
-// Config map for ini parser sections
-type Config map[string]map[string]string
+// section map for ini parser section
+type section map[string]string
+
+// Data map for ini parser sections
+type Data map[string]section
 
 // INIParser ini parser struct
 type INIParser struct {
-	sections Config
+	sections Data
 }
 
 // NewParser returns a new ini Parser object.
 func NewINIParser() INIParser {
-	return INIParser{sections: make(Config)}
+	return INIParser{sections: make(Data)}
 }
 
 func (ini *INIParser) loadData(data io.Reader) error {
-	ini.sections = Config{}
+	ini.sections = Data{}
 
 	currentSection := ""
 
@@ -109,7 +112,7 @@ func (ini *INIParser) LoadFromFile(filePath string) error {
 }
 
 // GetSections return ini sections
-func (ini *INIParser) GetSections() Config {
+func (ini *INIParser) GetSections() Data {
 	return ini.sections
 }
 

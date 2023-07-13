@@ -38,7 +38,7 @@ host = localhost
 port = 5432
 name = mydb`
 
-var configData = Config{
+var configData = Data{
 	"server": {
 		"ip":   "127.0.0.1",
 		"port": "8080",
@@ -84,7 +84,7 @@ func TestLoadFromFile(t *testing.T) {
 		t.Errorf("config does not match expected config.\nExpected: %+v\nActual: %+v", want, got)
 	}
 
-	want = Config{
+	want = Data{
 		"database": {
 			"host": "localhost",
 			"port": "5432",

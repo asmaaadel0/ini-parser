@@ -28,8 +28,8 @@ var ErrorInvalidFormat = errors.New("invalid format")
 // ErrorInvalidKeyFormat error invalid key format
 var ErrorInvalidKeyFormat = errors.New("invalid key format")
 
-// ErrorRedefiningSection section already defined
-var ErrorRedefiningSection = errors.New("section with same key already defined")
+// ErrorRedefiningKey section already defined
+var ErrorRedefiningKey = errors.New("section with same key already defined")
 
 // ErrorOpeningFile error while opening file
 var ErrorOpeningFile = errors.New("eror opening file")
@@ -83,7 +83,7 @@ func (ini *INIParser) loadData(data io.Reader) error {
 			value := strings.TrimSpace(parts[1])
 			_, err := ini.Get(currentSection, key)
 			if err == nil {
-				return ErrorRedefiningSection
+				return ErrorRedefiningKey
 			}
 			ini.sections[currentSection][key] = value
 			continue

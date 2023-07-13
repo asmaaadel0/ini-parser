@@ -9,10 +9,12 @@ import (
 )
 
 var validData = `
+;server section
 [server]
 ip = 127.0.0.1
 port = 8080
 
+;database section
 [database]
 host = localhost
 port = 5432
@@ -37,6 +39,24 @@ port = 8080
 host = localhost
 port = 5432
 name = mydb`
+
+var sectionNameEmptyData = `
+[]
+ip = 127.0.0.1
+port = 8080
+
+[database]
+host = localhost
+port = 5432
+name = mydb`
+
+var redefiningKeyData = `
+[server]
+host = 127.0.0.1
+host = 127.0.1.1
+
+[database]
+host = localhost`
 
 var configData = Data{
 	"server": {
@@ -100,6 +120,20 @@ func TestLoadFromFile(t *testing.T) {
 	if !(err == ErrorOpeningFile) {
 		t.Errorf("error in file")
 	}
+
+	dir = t.TempDir()
+	filePath = filepath.Join(dir, "config.txt")
+
+	err = os.WriteFile(filePath, []byte(validData), 0644)
+
+	if err != nil {
+		t.Fatalf("error creating temp file: %v", err)
+	}
+
+	err = ini.LoadFromFile(filePath)
+	if err != ErrorFileExtension {
+		t.Fatalf("Error: invalid file name")
+	}
 }
 
 func TestLoadFromString(t *testing.T) {
@@ -124,6 +158,16 @@ func TestLoadFromString(t *testing.T) {
 	err = ini.LoadFromString(invalidKeyData)
 	if !(err == ErrorInvalidKeyFormat) {
 		t.Errorf("error invalid key format")
+	}
+
+	err = ini.LoadFromString(sectionNameEmptyData)
+	if !(err == ErrorSectionNameEmpty) {
+		t.Errorf("error invalid section empty")
+	}
+
+	err = ini.LoadFromString(redefiningKeyData)
+	if !(err == ErrorRedefiningKey) {
+		t.Errorf("error redifinition key")
 	}
 }
 
@@ -282,6 +326,11 @@ func TestString(t *testing.T) {
 	if !(strings.Contains(got, "[server]") || strings.Contains(got, "port = 8080") || strings.Contains(got, "[database]") || strings.Contains(got, "host = localhost")) {
 		t.Errorf("config does not match expected config.\nExpected: %+v\nActual: %+v", want, got)
 	}
+
+	// Compare the parsed config with the expected config
+	if strings.Contains(got, ";server section") {
+		t.Errorf("config does not match expected config.\nExpected: %+v\nActual: %+v", want, got)
+	}
 }
 
 func TestSaveToFile(t *testing.T) {
@@ -312,4 +361,6 @@ func TestSaveToFile(t *testing.T) {
 	if got == ErrorFileExtension {
 		t.Errorf("wrong file name")
 	}
+
+	os.Remove("true.ini")
 }

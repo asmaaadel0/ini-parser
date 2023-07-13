@@ -94,8 +94,8 @@ func TestLoadFromFile(t *testing.T) {
 	}
 
 	err = ini.LoadFromFile(filePath)
-	if err != nil {
-		t.Fatalf("Error: %v", err)
+	if err == ErrorFileExtension {
+		t.Fatalf("Error: invalid file name")
 	}
 
 	got := ini.sections
@@ -116,7 +116,7 @@ func TestLoadFromFile(t *testing.T) {
 		t.Errorf("error in config")
 	}
 
-	err = ini.LoadFromFile("tests/testt.ini")
+	err = ini.LoadFromFile("testt.ini")
 	if !(err == ErrorOpeningFile) {
 		t.Errorf("error in file")
 	}
@@ -304,6 +304,13 @@ func TestSet(t *testing.T) {
 
 	ini.Set("database", "portt", "8000")
 	got = ini.sections["database"]["portt"]
+
+	if !(got == want) {
+		t.Errorf("setting value does not match expected value.\nExpected: %+v\nActual: %+v", want, got)
+	}
+
+	ini.Set("databasee", "port", "8000")
+	got = ini.sections["databasee"]["port"]
 
 	if !(got == want) {
 		t.Errorf("setting value does not match expected value.\nExpected: %+v\nActual: %+v", want, got)

@@ -13,6 +13,9 @@ import (
 // ErrorSectionNotFound section name doesn't exist
 var ErrorSectionNotFound = errors.New("section name doesn't exist")
 
+// ErrorSectionNameEmpty section name is empty
+var ErrorSectionNameEmpty = errors.New("section name is empty")
+
 // ErrorKeyName key name doesn't exist
 var ErrorKeyName = errors.New("key name doesn't exist")
 
@@ -64,6 +67,9 @@ func (ini *INIParser) loadData(data io.Reader) error {
 
 		if line[0] == '[' && line[len(line)-1] == ']' {
 			currentSection = strings.TrimSpace(line[1 : len(line)-1])
+			if len(currentSection) == 0 {
+				return ErrorSectionNameEmpty
+			}
 			ini.sections[currentSection] = make(section)
 		} else if currentSection != "" {
 			if !strings.Contains(line, "=") {

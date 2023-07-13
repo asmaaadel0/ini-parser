@@ -18,7 +18,7 @@ host = localhost
 port = 5432
 name = mydb`
 
-var invalidSectionName = `
+var invalidSectionNameData = `
 server]
 ip = 127.0.0.1
 port = 8080
@@ -28,7 +28,7 @@ host = localhost
 port = 5432
 name = mydb`
 
-var invalidKey = `
+var invalidKeyData = `
 [server]
 = 127.0.0.1
 port = 8080
@@ -105,10 +105,8 @@ func TestLoadFromFile(t *testing.T) {
 func TestLoadFromString(t *testing.T) {
 	want := configData
 
-	data := validData
-
 	ini := NewINIParser()
-	err := ini.LoadFromString(data)
+	err := ini.LoadFromString(validData)
 	if err != nil {
 		t.Errorf("Error:%v", err)
 	}
@@ -117,16 +115,13 @@ func TestLoadFromString(t *testing.T) {
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("config does not match expected config.\nExpected: %+v\nActual: %+v", want, got)
 	}
-	data = invalidSectionName
 
-	err = ini.LoadFromString(data)
+	err = ini.LoadFromString(invalidSectionNameData)
 	if !(err == ErrorInvalidFormat) {
 		t.Errorf("error invalid format")
 	}
 
-	data = invalidKey
-
-	err = ini.LoadFromString(data)
+	err = ini.LoadFromString(invalidKeyData)
 	if !(err == ErrorInvalidKeyFormat) {
 		t.Errorf("error invalid key format")
 	}
@@ -273,17 +268,15 @@ func TestSet(t *testing.T) {
 
 func TestString(t *testing.T) {
 	want := configData
-	data := validData
 
 	ini := NewINIParser()
 
-	err := ini.LoadFromString(data)
+	err := ini.LoadFromString(validData)
 	if err != nil {
 		t.Errorf("Error:%v", err)
 	}
 
-	data = ini.String()
-	got := data
+	got := ini.String()
 
 	// Compare the parsed config with the expected config
 	if !(strings.Contains(got, "[server]") || strings.Contains(got, "port = 8080") || strings.Contains(got, "[database]") || strings.Contains(got, "host = localhost")) {

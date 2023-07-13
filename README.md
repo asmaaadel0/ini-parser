@@ -29,7 +29,7 @@ ini := iniparser.NewINIParser()
 - Load Data from String using "LoadFromString" function:
 
 ```sh
-err := ini.LoadFromString(data)
+err := ini.LoadFromString(validData)
 if err != nil {
 	return err
 }
@@ -47,7 +47,7 @@ if err != nil {
 - Get all sections from config file using "GetSections" function:
 
 ```sh
-sections := ini.GetSections(data)
+sections := ini.GetSections(validData)
 ```
 
 - Access configuration values by section and key using "Get" function:

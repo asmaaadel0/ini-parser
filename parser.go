@@ -11,7 +11,7 @@ import (
 )
 
 // ErrorSectionNotFound section name doesn't exist
-var ErrorSectionNotFound = errors.New(" error section name doesn't exist")
+var ErrorSectionNotFound = errors.New("section name doesn't exist")
 
 // ErrorKeyName key name doesn't exist
 var ErrorKeyName = errors.New("key name doesn't exist")
@@ -25,8 +25,8 @@ var ErrorInvalidFormat = errors.New("invalid format")
 // ErrorInvalidKeyFormat error invalid key format
 var ErrorInvalidKeyFormat = errors.New("invalid key format")
 
-// RedefiningSection section already defined
-var RedefiningSection = errors.New("section with same key already defined")
+// ErrorRedefiningSection section already defined
+var ErrorRedefiningSection = errors.New("section with same key already defined")
 
 // ErrorOpeningFile error while opening file
 var ErrorOpeningFile = errors.New("eror opening file")
@@ -42,7 +42,7 @@ type INIParser struct {
 	sections Data
 }
 
-// NewParser returns a new ini Parser object.
+// NewINIParser returns a new ini Parser object.
 func NewINIParser() INIParser {
 	return INIParser{sections: make(Data)}
 }
@@ -80,7 +80,7 @@ func (ini *INIParser) loadData(data io.Reader) error {
 			value := strings.TrimSpace(parts[1])
 			_, err := ini.Get(currentSection, key)
 			if err == nil {
-				return RedefiningSection
+				return ErrorRedefiningSection
 			}
 			ini.sections[currentSection][key] = value
 		} else {

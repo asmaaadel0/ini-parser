@@ -23,61 +23,61 @@ This is package provides INI parser written in Go. It allows you to parse and ma
 - Create a new ini Parser object using "NewINIParser" function:
 
 ```sh
-	ini := NewINIParser()
+ini := NewINIParser()
 ```
 
 - Load Data from String using "LoadFromString" function:
 
 ```sh
-	err := ini.LoadFromString(data)
-	if err != nil {
-		return err
-	}
+err := ini.LoadFromString(data)
+if err != nil {
+	return err
+}
 ```
 
 - Load Data from file using "LoadFromFile" function:
 
 ```sh
-	err := ini.LoadFromFile("tests/test.ini")
-	if err != nil {
-		return err
-	}
+err := ini.LoadFromFile("tests/test.ini")
+if err != nil {
+	return err
+}
 ```
 
 - Get all sections from config file using "GetSections" function:
 
 ```sh
-	sections := ini.GetSections(data)
+sections := ini.GetSections(data)
 ```
 
 - Access configuration values by section and key using "Get" function:
 
 ```sh
-	got, err := ini.Get("section", "section")
-	if err != nil {
-		return err
-	}
+got, err := ini.Get("section", "section")
+if err != nil {
+	return err
+}
 ```
 
 - Set new values for keys using "Set" function:
 
 ```sh
-	ini.Set(config, "section", "key", "new_value")
+ini.Set(config, "section", "key", "new_value")
 ```
 
 - Convert Sections to String using "String" function:
 
 ```sh
-	data = ini.String()
+data = ini.String()
 ```
 
 - Write the modified configuration to a new text file using "SaveToFile" function:
 
 ```sh
-	err := ini.SaveToFile("file.ini")
-	if err != nil {
-		return err
-	}
+err := ini.SaveToFile("file.ini")
+if err != nil {
+	return err
+}
 ```
 
 ## INI file Example
@@ -96,7 +96,7 @@ protected = true
 
 ```
 
-## how to test
+## How to test
 
 - Run the tests by running:
 

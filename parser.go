@@ -71,7 +71,10 @@ func (ini *INIParser) loadData(data io.Reader) error {
 				return ErrorSectionNameEmpty
 			}
 			ini.sections[currentSection] = make(section)
-		} else if currentSection != "" && strings.Contains(line, "=") {
+			continue
+		}
+
+		if currentSection != "" && strings.Contains(line, "=") {
 			parts := strings.Split(line, "=")
 			key := strings.TrimSpace(parts[0])
 			if len(key) == 0 {
@@ -83,9 +86,10 @@ func (ini *INIParser) loadData(data io.Reader) error {
 				return ErrorRedefiningSection
 			}
 			ini.sections[currentSection][key] = value
-		} else {
-			return ErrorInvalidFormat
+			continue
 		}
+
+		return ErrorInvalidFormat
 	}
 	return nil
 }

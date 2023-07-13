@@ -29,7 +29,7 @@ ini := iniparser.NewINIParser()
 - Load Data from String using "LoadFromString" function:
 
 ```sh
-err := ini.LoadFromString(validData)
+err := ini.LoadFromString(`[server]\nip = 127.0.0.1\nport = 8080\n\n[database]\nhost = localhost\nport = 5432\nname = mydb`)
 if err != nil {
 	return err
 }
@@ -47,7 +47,7 @@ if err != nil {
 - Get all sections from config file using "GetSections" function:
 
 ```sh
-sections := ini.GetSections(validData)
+sections := ini.GetSections()
 ```
 
 - Access configuration values by section and key using "Get" function:
@@ -62,7 +62,7 @@ if err != nil {
 - Set new values for keys using "Set" function:
 
 ```sh
-ini.Set(config, "section", "key", "new_value")
+ini.Set("section", "key", "new_value")
 ```
 
 - Convert Sections to String using "String" function:

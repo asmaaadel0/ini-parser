@@ -17,7 +17,7 @@ This is package provides INI parser written in Go. It allows you to parse and ma
 - Import package
 
 ```sh
-  import "github.com/codescalersinternships/iniparser-Asmaa"
+import "github.com/codescalersinternships/iniparser-Asmaa"
 ```
 
 - Create a new ini Parser object using "NewINIParser" function:

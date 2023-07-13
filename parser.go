@@ -64,7 +64,7 @@ func (ini *INIParser) loadData(data io.Reader) error {
 
 		if line[0] == '[' && line[len(line)-1] == ']' {
 			currentSection = strings.TrimSpace(line[1 : len(line)-1])
-			ini.sections[currentSection] = make(map[string]string)
+			ini.sections[currentSection] = make(section)
 		} else if currentSection != "" {
 			if !strings.Contains(line, "=") {
 				return ErrorInvalidFormat
@@ -140,7 +140,7 @@ func (ini *INIParser) Get(SectionName string, key string) (string, error) {
 // Set value for specific key and section
 func (ini *INIParser) Set(SectionName string, key string, value string) {
 	if ini.sections[SectionName] == nil {
-		ini.sections[SectionName] = make(map[string]string)
+		ini.sections[SectionName] = make(section)
 	}
 	ini.sections[SectionName][key] = value
 }

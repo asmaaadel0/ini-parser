@@ -10,8 +10,8 @@ import (
 	"strings"
 )
 
-// SectionNotFound section name doesn't exist
-var SectionNotFound = errors.New("section name doesn't exist")
+// ErrorSectionNotFound section name doesn't exist
+var ErrorSectionNotFound = errors.New(" error section name doesn't exist")
 
 // ErrorKeyName key name doesn't exist
 var ErrorKeyName = errors.New("key name doesn't exist")
@@ -125,7 +125,7 @@ func (ini *INIParser) GetSectionNames() []string {
 // Get return value for specific section name and key
 func (ini *INIParser) Get(SectionName string, key string) (string, error) {
 	if ini.sections[SectionName] == nil {
-		return "", SectionNotFound
+		return "", ErrorSectionNotFound
 	}
 	data, ok := ini.sections[SectionName][key]
 	if !ok {

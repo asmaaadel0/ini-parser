@@ -225,7 +225,7 @@ func TestGet(t *testing.T) {
 	}
 
 	_, err = ini.Get("serve", "port")
-	if !(err == SectionNotFound) {
+	if !(err == ErrorSectionNotFound) {
 		t.Errorf("wrong section name")
 	}
 

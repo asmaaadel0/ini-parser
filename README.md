@@ -6,7 +6,7 @@ This is package provides INI parser written in Go. It allows you to parse and ma
 
 - Parse an INI Data from String and retrieve configuration values.
 - Parse an INI Data from file and retrieve configuration values.
-- Get all sections from configuration.
+- Get all sections from configuration. 
 - Set new values for keys in the INI file.
 - Get configuration value with section and key
 - Convert Sections to String.
